@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>WhatsApp - O Segredo de Sofia</title>
+  <title>WhatsApp</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { background-color: #0b141a; color: #e9edef; height: 100vh; height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
@@ -13,12 +13,12 @@
     .header-title { font-size: 19px; font-weight: bold; color: #8696a0; }
     .header-chat { display: flex; align-items: center; gap: 10px; width: 100%; }
     .back-btn { background: none; border: none; color: #00a884; font-size: 22px; cursor: pointer; padding-right: 6px; }
-    .avatar { min-width: 40px; width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; color: #111b21; position: relative; }
+    
+    .avatar-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
     .user-info { display: flex; flex-direction: column; flex: 1; cursor: pointer; }
     .user-name { font-weight: 600; font-size: 15px; color: #e9edef; }
-    .user-status { font-size: 11px; color: #8696a0; transition: color 0.3s; }
+    .user-status { font-size: 11px; color: #8696a0; }
     
-    .rel-badge { font-size: 10px; background: #111b21; padding: 4px 8px; border-radius: 12px; border: 1px solid #00a884; color: #00a884; font-weight: bold; text-align: right; }
     .reset-btn { background-color: #2a3942; border: 1px solid #3b4a54; color: #f1f1f1; padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
 
     #chat-list-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
@@ -29,19 +29,18 @@
     .chat-item-name { font-size: 15px; font-weight: 600; color: #e9edef; }
     .chat-item-time { font-size: 11px; color: #8696a0; }
     .chat-item-body { display: flex; justify-content: space-between; align-items: center; }
-    .chat-item-lastmsg { font-size: 13px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; padding-right: 8px; }
-    
+    .chat-item-lastmsg { font-size: 13px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
     .unread-badge { background-color: #00a884; color: #111b21; font-size: 11px; font-weight: bold; border-radius: 50%; min-width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
 
     #chat-room-view { flex: 1; display: none; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     #messages-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; scroll-behavior: smooth; }
     
-    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
-    .msg-sender { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #00a884; }
+    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: slideUp 0.25s ease; }
     .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
     .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 6px 0; border: 1px solid #222d34; }
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
+    .msg-img { width: 100%; border-radius: 6px; margin-top: 4px; margin-bottom: 2px; cursor: pointer; }
 
     .typing { align-self: flex-start; background-color: #202c33; padding: 10px 14px; border-radius: 8px; border-top-left-radius: 0; display: none; margin-bottom: 6px; align-items: center; gap: 6px; }
     .dots { display: flex; gap: 4px; align-items: center; }
@@ -50,13 +49,13 @@
     .dot:nth-child(3) { animation-delay: .4s; }
 
     #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; flex-shrink: 0; }
-    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: transform 0.1s, background-color 0.2s; line-height: 1.3; }
-    .opt-btn:active { background-color: #222d34; transform: scale(0.98); }
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: background-color 0.2s; line-height: 1.3; }
+    .opt-btn:active { background-color: #222d34; }
 
-    #name-modal, #profile-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
+    #name-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
     .modal-box { background: #202c33; padding: 25px; border-radius: 12px; width: 100%; max-width: 340px; text-align: center; border: 1px solid #222d34; }
     .modal-box h2 { font-size: 18px; margin-bottom: 8px; color: #00a884; }
-    .modal-box p { font-size: 13px; color: #8696a0; margin-bottom: 18px; }
+    .modal-box p { font-size: 13px; color: #8696a0; margin-bottom: 18px; line-height: 1.4; }
     .modal-box input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #222d34; background: #111b21; color: #fff; font-size: 16px; margin-bottom: 14px; outline: none; }
     .modal-box button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #00a884; color: #111b21; font-weight: bold; font-size: 15px; cursor: pointer; }
 
@@ -67,24 +66,12 @@
 <body>
 
 <div id="app">
-  <div id="name-modal" style="display: none;">
+  <div id="name-modal" style="display: flex;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
-      <p>A tua amiga de infância Sofia está desaparecida. Insere o teu nome para começar a investigação.</p>
+      <p>Acabaste o teu dia de trabalho e estás a relaxar no telemóvel. Insere o teu nome verdadeiro para continuar.</p>
       <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
-      <button onclick="iniciarJogo()">ENTRAR NO CASO</button>
-    </div>
-  </div>
-
-  <div id="profile-modal" style="display: none;">
-    <div class="modal-box">
-      <h2 id="prof-title">Perfil do Contacto</h2>
-      <p id="prof-desc" style="margin-top:10px; color:#e9edef;">Informações do contacto.</p>
-      <div style="margin: 15px 0; background:#111b21; padding:12px; border-radius:8px; border:1px solid #222d34;">
-        <span style="font-size:12px; color:#8696a0;">Nível de Confiança:</span>
-        <div id="prof-rel-bar" style="font-size:20px; font-weight:bold; color:#00a884; margin-top:2px;">50%</div>
-      </div>
-      <button onclick="fecharPerfil()">VOLTAR</button>
+      <button onclick="iniciarJogo()">LIGAR TELEMÓVEL</button>
     </div>
   </div>
 
@@ -96,12 +83,11 @@
   <header id="chat-header" style="display: none;">
     <div class="header-chat">
       <button class="back-btn" onclick="voltarParaLista()">❮</button>
-      <div class="avatar" id="active-avatar">T</div>
-      <div class="user-info" onclick="abrirPerfil()">
-        <div class="user-name" id="active-name">Tomás</div>
+      <img id="active-avatar-img" class="avatar-img" src="" alt="Avatar">
+      <div class="user-info">
+        <div class="user-name" id="active-name">Desconhecido</div>
         <div class="user-status" id="active-status">online</div>
       </div>
-      <div class="rel-badge" id="active-rel">Confiança: 50%</div>
     </div>
   </header>
 
@@ -110,7 +96,7 @@
   <div id="chat-room-view">
     <div id="messages-container">
       <div class="typing" id="typing-indicator">
-        <span style="font-size: 11px; color:#8696a0; margin-right: 4px;" id="typing-name">a escrever</span>
+        <span style="font-size: 11px; color:#8696a0; margin-right: 4px;">a escrever</span>
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
       </div>
     </div>
@@ -119,58 +105,16 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_v12') || "";
+  let playerName = localStorage.getItem('player_name_v13') || "";
   let activeChat = null;
   let opcoesAtivas = null;
 
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function tocarSom(tipo) {
-    try {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      if (tipo === 'recebido') {
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
-      } else if (tipo === 'enviado') {
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-      }
-    } catch (e) {}
-  }
-
-  let chatData = {
-    grupo: {
-      name: "Procura da Sofia 🔍", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
-      relacao: 50, unlocked: true, isGroup: true, unread: 0,
-      desc: "Grupo com os amigos de Monte Cedo.", msgs: []
-    },
-    ines: { 
-      name: "Inês", avatar: "I", bg: "#e91e63", status: "online", 
-      relacao: 60, unlocked: false, isGroup: false, unread: 0,
-      desc: "A tua antiga vizinha. Está em pânico e culpa-se pelo desaparecimento.", msgs: [] 
-    },
-    tomas: { 
-      name: "Tomás", avatar: "T", bg: "#00a884", status: "online", 
-      relacao: 40, unlocked: false, isGroup: false, unread: 0,
-      desc: "Amigo de turma calmo, mas evasivo sobre o que fez ontem à noite.", msgs: [] 
-    },
-    diogo: { 
-      name: "Diogo", avatar: "D", bg: "#607d8b", status: "offline", 
-      relacao: 30, unlocked: false, isGroup: false, unread: 0,
-      desc: "Ex-namorado de Sofia. Tem histórico de impulsividade.", msgs: [] 
-    },
-    zero: { 
-      name: "Número Encriptado", avatar: "0", bg: "#e53935", status: "offline", 
-      relacao: 15, unlocked: false, isGroup: false, unread: 0,
-      desc: "Desconhecido que monitoriza a rede de Monte Cedo.", msgs: [] 
+  // Imagens reais de exemplo (Unsplash públicas)
+  const chatData = {
+    carolina: {
+      name: "Carolina", 
+      avatarImg: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+      status: "online", unlocked: true, unread: 0, msgs: []
     }
   };
 
@@ -179,27 +123,16 @@
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   }
 
-  function alterarRelacao(chatId, delta) {
-    if (chatData[chatId]) {
-      chatData[chatId].relacao = Math.min(100, Math.max(0, chatData[chatId].relacao + delta));
-      guardarEstado();
-      if (activeChat === chatId) {
-        document.getElementById('active-rel').innerText = "Confiança: " + chatData[chatId].relacao + "%";
-      }
-    }
-  }
-
   function reiniciarJogo() {
-    if (confirm("Quer reiniciar o jogo e apagar o progresso?")) {
+    if (confirm("Reiniciar história?")) {
       localStorage.clear();
       location.reload();
     }
   }
 
   window.onload = function() {
-    if (!playerName) {
-      document.getElementById('name-modal').style.display = 'flex';
-    } else {
+    if (playerName) {
+      document.getElementById('name-modal').style.display = 'none';
       carregarEstado();
     }
   };
@@ -208,15 +141,15 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_v12', playerName);
+    localStorage.setItem('player_name_v13', playerName);
     document.getElementById('name-modal').style.display = 'none';
     iniciarHistoria();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_v12');
+    const savedData = localStorage.getItem('chat_data_v13');
     if (savedData) {
-      chatData = JSON.parse(savedData);
+      Object.assign(chatData, JSON.parse(savedData));
       atualizarListaGeral();
     } else {
       iniciarHistoria();
@@ -224,7 +157,7 @@
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_v12', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_v13', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
@@ -241,28 +174,23 @@
 
         if (msgs.length > 0) {
           const ult = msgs[msgs.length - 1];
-          ultTexto = ult.text ? ult.text.replace(/<[^>]*>?/gm, '') : "Ficheiro";
-          if (ult.sender) ultTexto = ult.sender + ": " + ultTexto;
+          ultTexto = ult.text ? ult.text.replace(/<[^>]*>?/gm, '') : "[Fotografia]";
           ultHora = ult.time || obterHora();
         }
-
-        const unreadBadgeHTML = chat.unread > 0 
-          ? `<div class="unread-badge">${chat.unread}</div>` 
-          : '';
 
         const item = document.createElement('div');
         item.className = 'chat-item';
         item.onclick = () => abrirChat(id);
         item.innerHTML = `
-          <div class="avatar" style="background-color: ${chat.bg};">${chat.avatar}</div>
+          <img src="${chat.avatarImg}" class="avatar-img">
           <div class="chat-item-details">
             <div class="chat-item-header">
               <span class="chat-item-name">${chat.name}</span>
-              <span class="chat-item-time" style="${chat.unread > 0 ? 'color:#00a884; font-weight:bold;' : ''}">${ultHora}</span>
+              <span class="chat-item-time">${ultHora}</span>
             </div>
             <div class="chat-item-body">
               <div class="chat-item-lastmsg">${ultTexto}</div>
-              ${unreadBadgeHTML}
+              ${chat.unread > 0 ? `<div class="unread-badge">${chat.unread}</div>` : ''}
             </div>
           </div>
         `;
@@ -284,25 +212,10 @@
 
     document.getElementById('active-name').innerText = info.name;
     document.getElementById('active-status').innerText = info.status;
-    document.getElementById('active-avatar').innerText = info.avatar;
-    document.getElementById('active-avatar').style.backgroundColor = info.bg;
-    document.getElementById('active-rel').innerText = info.isGroup ? "Grupo Geral" : "Confiança: " + info.relacao + "%";
+    document.getElementById('active-avatar-img').src = info.avatarImg;
 
     renderizarMensagens();
     renderizarOpcoes();
-  }
-
-  function abrirPerfil() {
-    if (!activeChat) return;
-    const info = chatData[activeChat];
-    document.getElementById('prof-title').innerText = info.name;
-    document.getElementById('prof-desc').innerText = info.desc;
-    document.getElementById('prof-rel-bar').innerText = info.isGroup ? "N/A" : info.relacao + "%";
-    document.getElementById('profile-modal').style.display = 'flex';
-  }
-
-  function fecharPerfil() {
-    document.getElementById('profile-modal').style.display = 'none';
   }
 
   function voltarParaLista() {
@@ -323,9 +236,9 @@
       const div = document.createElement('div');
       div.className = 'msg ' + m.type;
       let htmlContent = "";
-      if (m.sender) htmlContent += `<div class="msg-sender">${m.sender}</div>`;
-      if (m.type === 'system') htmlContent = m.text;
-      else htmlContent += m.text + `<span class="msg-time">${m.time}</span>`;
+      if (m.img) htmlContent += `<img src="${m.img}" class="msg-img" onclick="window.open('${m.img}')">`;
+      if (m.text) htmlContent += m.text;
+      htmlContent += `<span class="msg-time">${m.time}</span>`;
       div.innerHTML = htmlContent;
       container.appendChild(div);
     });
@@ -333,7 +246,7 @@
     const typ = document.createElement('div');
     typ.className = 'typing';
     typ.id = 'typing-indicator';
-    typ.innerHTML = '<span style="font-size: 11px; color:#8696a0; margin-right: 4px;" id="typing-name">a escrever</span><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+    typ.innerHTML = '<span style="font-size: 11px; color:#8696a0; margin-right: 4px;">a escrever</span><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
     container.appendChild(typ);
 
     container.scrollTop = container.scrollHeight;
@@ -351,14 +264,8 @@
         btn.onclick = () => {
           container.innerHTML = '';
           const acao = o.proximo;
-          const delta = o.delta;
-          const target = o.target;
           opcoesAtivas = null;
-          
-          pushMsg(activeChat, 'sent', o.texto, null, () => {
-            if (delta && target) alterarRelacao(target, delta);
-            setTimeout(acao, 600);
-          });
+          pushMsg(activeChat, 'sent', o.texto, null, () => setTimeout(acao, 500));
         };
         container.appendChild(btn);
       });
@@ -366,214 +273,109 @@
     }
   }
 
-  function pushMsg(chatId, type, text, sender = null, callback = null) {
-    if (!chatData[chatId].unlocked) chatData[chatId].unlocked = true;
-
-    if (type === 'sent' || type === 'system') {
-      const hora = obterHora();
-      chatData[chatId].msgs.push({ type, text, sender, time: hora });
+  function pushMsg(chatId, type, text, img = null, callback = null) {
+    if (type === 'sent') {
+      chatData[chatId].msgs.push({ type, text, img, time: obterHora() });
       guardarEstado();
-      if (activeChat === chatId) {
-        renderizarMensagens();
-        if (type === 'sent') tocarSom('enviado');
-      }
+      if (activeChat === chatId) renderizarMensagens();
       if (callback) callback();
       return;
     }
 
-    const baseTyping = Math.min(Math.max(text.length * 22, 1000), 3000);
-
     if (activeChat === chatId) {
       const typingIndicator = document.getElementById('typing-indicator');
-      const typingName = document.getElementById('typing-name');
-      
-      if (typingIndicator) {
-        typingName.innerText = sender ? `${sender} está a escrever` : "a escrever";
-        typingIndicator.style.display = 'flex';
-        const container = document.getElementById('messages-container');
-        container.scrollTop = container.scrollHeight;
-      }
+      if (typingIndicator) typingIndicator.style.display = 'flex';
 
       setTimeout(() => {
         if (typingIndicator) typingIndicator.style.display = 'none';
-        const hora = obterHora();
-        chatData[chatId].msgs.push({ type, text, sender, time: hora });
+        chatData[chatId].msgs.push({ type, text, img, time: obterHora() });
         guardarEstado();
-        if (activeChat === chatId) {
-          renderizarMensagens();
-          tocarSom('recebido');
-        }
+        renderizarMensagens();
         if (callback) callback();
-      }, baseTyping);
-
+      }, 1500);
     } else {
       setTimeout(() => {
-        const hora = obterHora();
-        chatData[chatId].msgs.push({ type, text, sender, time: hora });
+        chatData[chatId].msgs.push({ type, text, img, time: obterHora() });
         chatData[chatId].unread += 1;
         guardarEstado();
         if (callback) callback();
-      }, baseTyping / 1.5);
+      }, 1000);
     }
   }
 
   function mostrarOpcoes(chatTarget, opcoes) {
-    opcoesAtivas = {
-      chatId: chatTarget,
-      lista: opcoes
-    };
-    setTimeout(() => {
-      if (activeChat !== chatTarget) {
-        abrirChat(chatTarget);
-      } else {
-        renderizarOpcoes();
-      }
-    }, 400);
+    opcoesAtivas = { chatId: chatTarget, lista: opcoes };
+    if (activeChat === chatTarget) renderizarOpcoes();
   }
 
-  /* ==================== ESTRUTURA PROFUNDA DA NARRATIVA ==================== */
+  /* ==================== A NOVA PREMISSA REALISTA ==================== */
 
   function iniciarHistoria() {
-    pushMsg('grupo', 'system', '⚠️ FOSTE ADICIONADO AO GRUPO "PROCURA DA SOFIA"');
+    atualizarListaGeral();
     
-    pushMsg('grupo', 'received', 'Ainda bem que vieste, ' + playerName + '. Já não dormimos há 24 horas.', 'Inês', () => {
-      pushMsg('grupo', 'received', 'Não adianta assustá-lo(a), Inês. Deixa explicar com calma.', 'Tomás', () => {
-        pushMsg('grupo', 'received', 'Com calma?! O telemóvel da Sofia deu sinal às 3h da manhã na serra de Monte Cedo e depois desligou!', 'Inês', () => {
-          pushMsg('grupo', 'received', 'A última mensagem que ela enviou antes de ficar sem rede foi para o teu contacto antigo, ' + playerName + '. Dizia apenas: "Inês e Tomás não sabem de tudo. Pede ajuda ao Zero."', 'Inês', () => {
-            abrirChat('grupo');
-            mostrarOpcoes('grupo', [
-              { 
-                texto: "Zero?! Quem é o Zero? Vocês conhecem alguém com esse nome?", 
-                target: "tomas", delta: 0,
-                proximo: () => cap1_quem_e_zero() 
-              },
-              { 
-                texto: "Calma Inês. Expliquem-me exatamente o que aconteceu ontem à noite antes de ela sumir.", 
-                target: "ines", delta: +10,
-                proximo: () => cap1_noite_anterior() 
-              }
-            ]);
+    // O jogo começa com o telemóvel do jogador a tocar no final do dia
+    setTimeout(() => {
+      pushMsg('carolina', 'received', 'Olá... Desculpa incomodar a esta hora.', null, () => {
+        pushMsg('carolina', 'received', 'Sei que não nos conhecemos, mas encontrei este número num bilhete dobrado dentro do casaco da minha irmã.', null, () => {
+          pushMsg('carolina', 'received', 'Ela não vem para casa desde ontem. Dizia no bilhete: "Se algo me acontecer, fala com o número ' + playerName + '".', null, () => {
+            pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80', () => {
+              pushMsg('carolina', 'received', 'Tirei foto ao bilhete... Tu conheces a minha irmã? Sabes quem é ela?', () => {
+                abrirChat('carolina');
+                mostrarOpcoes('carolina', [
+                  { 
+                    texto: "Boa noite. Acho que há aqui um engano grave, eu nunca vi essa pessoa nem essa letra.", 
+                    proximo: () => cap1_engano() 
+                  },
+                  { 
+                    texto: "Calma... Eu sou o(a) " + playerName + ", mas não faço ideia de quem seja a tua irmã. O que é que se passa?", 
+                    proximo: () => cap1_explicar_quem_sou() 
+                  }
+                ]);
+              });
+            });
           });
         });
       });
-    });
+    }, 1000);
   }
 
-  function cap1_quem_e_zero() {
-    pushMsg('grupo', 'received', 'Nunca ouvi esse nome na vida. A Sofia nunca mencionou nenhum "Zero".', 'Tomás', () => {
-      pushMsg('grupo', 'received', 'Será algum contacto da faculdade? Ou alguém da internet?', 'Inês', () => {
-        cap1_noite_anterior();
+  function cap1_engano() {
+    pushMsg('carolina', 'received', 'Um engano? Mas o teu nome está escrito no bilhete exatamente assim... ' + playerName + '.', null, () => {
+      pushMsg('carolina', 'received', 'Por favor não desligues. Estou sozinha no quarto dela e estou assustada com o que acabei de encontrar na secretária dela...', null, () => {
+        mostrarOpcoes('carolina', [
+          { 
+            texto: "O que é que encontraste na secretária? Mostra-me.", 
+            proximo: () => cap2_revelacao_foto() 
+          }
+        ]);
       });
     });
   }
 
-  function cap1_noite_anterior() {
-    pushMsg('grupo', 'received', 'Ontem fomos os três jantar ao centro de Monte Cedo. A Sofia estava estranha, a olhar toda a hora para o telemóvel.', 'Inês', () => {
-      pushMsg('grupo', 'received', 'Às 21:30 o Diogo apareceu no restaurante. Eles tiveram uma discussão horrível à porta.', 'Tomás', () => {
-        pushMsg('grupo', 'received', 'Ela foi embora a chorar e disse que ia para casa. Foi a última vez que a vimos.', 'Inês', () => {
-          mostrarOpcoes('grupo', [
+  function cap1_explicar_quem_sou() {
+    pushMsg('carolina', 'received', 'Eu chamo-me Carolina. A minha irmã chama-se Marta... Ela tem 22 anos.', null, () => {
+      pushMsg('carolina', 'received', 'Se tu não a conheces, porque é que ela guardava o teu contacto como emergência?!', null, () => {
+        mostrarOpcoes('carolina', [
+          { 
+            texto: "Também gostava de perceber... O que é que ela estava a fazer antes de desaparecer?", 
+            proximo: () => cap2_revelacao_foto() 
+          }
+        ]);
+      });
+    });
+  }
+
+  function cap2_revelacao_foto() {
+    pushMsg('carolina', 'received', 'Olha para isto. Encontrei um portátil aberto com este mapa e uma foto impressa.', null, () => {
+      pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
+        pushMsg('carolina', 'received', 'Tem uma localização marcada na praia da cidade e uma data: HOJE. Achas que devo ir lá ver?', null, () => {
+          mostrarOpcoes('carolina', [
             { 
-              texto: "O Diogo ainda está na cidade? Onde é que ele está agora?", 
-              target: "ines", delta: 0,
-              proximo: () => cap1_suspeita_diogo() 
-            },
-            { 
-              texto: "Tomás, tu disseste que a acompanhaste até a casa dela. Confirmas isso?", 
-              target: "tomas", delta: -10,
-              proximo: () => cap1_contradicao_tomas() 
+              texto: "Não vás sozinha a lado nenhum à noite! Diz-me a morada para tentar perceber o que é esse sítio.", 
+              proximo: () => alert("Continuava aqui com a Carolina a enviar-te pistas reais para tu investigares no teu ritmo.") 
             }
           ]);
         });
-      });
-    });
-  }
-
-  function cap1_suspeita_diogo() {
-    pushMsg('grupo', 'received', 'Ele recusa-se a atender as minhas chamadas desde ontem à noite.', 'Inês', () => {
-      pushMsg('grupo', 'received', 'Vou tentar mandar-lhe mensagem privada para ver se ele fala comigo.', 'Inês', () => {
-        transicao_para_zero();
-      });
-    });
-  }
-
-  function cap1_contradicao_tomas() {
-    pushMsg('grupo', 'received', 'Eu... eu deixei-a à porta do prédio dela. Não entrei!', 'Tomás', () => {
-      pushMsg('grupo', 'received', 'Porquê essas perguntas agora, ' + playerName + '? Estás a duvidar de mim?', 'Tomás', () => {
-        transicao_para_zero();
-      });
-    });
-  }
-
-  function transicao_para_zero() {
-    setTimeout(() => {
-      pushMsg('zero', 'system', '🔒 MENSAGEM PRIVADA ENCRIPTADA');
-      pushMsg('zero', 'received', 'Não confies no Tomás.', 'Número Encriptado', () => {
-        pushMsg('zero', 'received', 'Eu sou o "Zero". A Sofia deu-me acesso às câmaras do café onde eles jantaram.', 'Número Encriptado', () => {
-          pushMsg('zero', 'received', 'O Tomás não a deixou em casa. Às 22:15 o carro dele foi visto a seguir para a serra logo atrás da Sofia.', 'Número Encriptado', () => {
-            mostrarOpcoes('zero', [
-              { 
-                texto: "Provas-me isso? Mostra-me o registo ou a imagem!", 
-                target: "zero", delta: +10,
-                proximo: () => cap2_pistas_zero() 
-              },
-              { 
-                texto: "Porque é que estás a falar em segredo comigo em vez de ir à polícia?", 
-                target: "zero", delta: -5,
-                proximo: () => cap2_motivo_zero() 
-              }
-            ]);
-          });
-        });
-      });
-    }, 1500);
-  }
-
-  function cap2_pistas_zero() {
-    pushMsg('zero', 'received', 'Não posso expor a minha localização. Mas podes comprovar tu mesmo(a): pede ao Tomás a foto do recibo do jantar.', 'Número Encriptado', () => {
-      pushMsg('zero', 'received', 'Vê a hora no recibo e pergunta-lhe porque é que demorou 1 hora num trajeto de 10 minutos.', 'Número Encriptado', () => {
-        desbloquear_confronto_tomas();
-      });
-    });
-  }
-
-  function cap2_motivo_zero() {
-    pushMsg('zero', 'received', 'A polícia local está envolvida com a família do Diogo. Se eles souberem disto, limpam as provas.', 'Número Encriptado', () => {
-      pushMsg('zero', 'received', 'A Sofia sabia disso. Por isso é que te deixou o aviso a ti.', 'Número Encriptado', () => {
-        desbloquear_confronto_tomas();
-      });
-    });
-  }
-
-  function desbloquear_confronto_tomas() {
-    pushMsg('tomas', 'system', '💬 CHAT PRIVADO COM TOMÁS');
-    pushMsg('tomas', 'received', playerName + ', a Inês está hysterica. Precisamos de manter a calma.', 'Tomás', () => {
-      mostrarOpcoes('tomas', [
-        { 
-          texto: "Tomás, a que horas saíram exatamente do restaurante ontem?", 
-          target: "tomas", delta: 0,
-          proximo: () => cap3_interrogatorio() 
-        },
-        { 
-          texto: "O Zero disse-me que o teu carro esteve na serra às 22:15. O que foste lá fazer?", 
-          target: "tomas", delta: -15,
-          proximo: () => cap3_confronto_direto() 
-        }
-      ]);
-    });
-  }
-
-  function cap3_interrogatorio() {
-    pushMsg('tomas', 'received', 'Saímos por volta das 21:45. Deixei-a em casa às 22:00 e fui direto para a minha garagem.', 'Tomás', () => {
-      pushMsg('tomas', 'received', 'Porque é que estás a fazer estas perguntas? Achas mesmo que eu faria mal à Sofia?!', 'Tomás', () => {
-        alert("Fim da Demonstração do Capítulo 1! O jogo agora exige que analises incoerências e investigues cada contacto gradualmente.");
-      });
-    });
-  }
-
-  function cap3_confronto_direto() {
-    pushMsg('tomas', 'received', 'O quê?! Esse "Zero" está a mentir-te! Eu fui à serra sim, mas fui à procura dela porque ela não me atendeu o telemóvel!', 'Tomás', () => {
-      pushMsg('tomas', 'received', 'Se continuas a confiar num estranho em vez de mim, não sei como te posso ajudar.', 'Tomás', () => {
-        alert("Fim da Demonstração do Capítulo 1! A tua escolha abalou a confiança do Tomás e mudou o rumo da investigação.");
       });
     });
   }
