@@ -17,12 +17,13 @@
     .avatar { min-width: 40px; width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; color: #111b21; position: relative; }
     .user-info { display: flex; flex-direction: column; flex: 1; cursor: pointer; }
     .user-name { font-weight: 600; font-size: 15px; color: #e9edef; }
-    .user-status { font-size: 11px; color: #8696a0; }
+    .user-status { font-size: 11px; color: #8696a0; transition: color 0.3s; }
+    .user-status.online { color: #00a884; }
     
     .rel-badge { font-size: 10px; background: #111b21; padding: 4px 8px; border-radius: 12px; border: 1px solid #00a884; color: #00a884; font-weight: bold; text-align: right; }
     .reset-btn { background-color: #2a3942; border: 1px solid #3b4a54; color: #f1f1f1; padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
 
-    /* LISTA DE CHATS E INDICADOR POR LER */
+    /* LISTA DE CHATS */
     #chat-list-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
     .chat-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #182229; cursor: pointer; transition: background 0.2s; position: relative; }
     .chat-item:active { background-color: #202c33; }
@@ -33,13 +34,13 @@
     .chat-item-body { display: flex; justify-content: space-between; align-items: center; }
     .chat-item-lastmsg { font-size: 13px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; padding-right: 8px; }
     
-    .unread-badge { background-color: #00a884; color: #111b21; font-size: 11px; font-weight: bold; border-radius: 50%; min-width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; padding: 0 4px; }
+    .unread-badge { background-color: #00a884; color: #111b21; font-size: 11px; font-weight: bold; border-radius: 50%; min-width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; padding: 0 4px; animation: pop 0.2s ease-out; }
 
-    /* ECRÃ DE CHAT INDIVIDUAL */
+    /* ECRÃ DE CHAT */
     #chat-room-view { flex: 1; display: none; flex-direction: column; height: 100%; position: relative; }
-    #messages-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; }
+    #messages-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; scroll-behavior: smooth; }
     
-    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
+    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
     .msg-sender { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #00a884; }
     .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
@@ -53,9 +54,9 @@
     .dot:nth-child(2) { animation-delay: .2s; }
     .dot:nth-child(3) { animation-delay: .4s; }
 
-    #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
-    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 11px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: 0.2s; }
-    .opt-btn:active { background-color: #222d34; }
+    #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 8px; min-height: 60px; transition: all 0.3s ease; }
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: transform 0.1s, background-color 0.2s; animation: fadeIn 0.3s ease-in; }
+    .opt-btn:active { background-color: #222d34; transform: scale(0.98); }
 
     /* MODAIS */
     #name-modal, #profile-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
@@ -65,7 +66,9 @@
     .modal-box input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #222d34; background: #111b21; color: #fff; font-size: 16px; margin-bottom: 14px; outline: none; }
     .modal-box button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #00a884; color: #111b21; font-weight: bold; font-size: 15px; cursor: pointer; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
     @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
   </style>
 </head>
@@ -134,9 +137,36 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_long_v4') || "";
+  let playerName = localStorage.getItem('player_name_long_v6') || "";
   let activeChat = null;
-  let opcoesAtivas = null; // Guarda as opções pendentes para o chat certo
+  let opcoesAtivas = null;
+
+  // GERADOR DE SONS DE SINTETIZADOR PARA EFEITO AUDITIVO SEM FICHEIROS EXTERNOS
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function tocarSom(tipo) {
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (tipo === 'recebido') {
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.08); // A5
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      } else if (tipo === 'enviado') {
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.05); // E5
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      }
+    } catch (e) {}
+  }
 
   let chatData = {
     grupo: {
@@ -220,13 +250,13 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_long_v4', playerName);
+    localStorage.setItem('player_name_long_v6', playerName);
     document.getElementById('name-modal').style.display = 'none';
     iniciarHistoria();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_save_long_v4');
+    const savedData = localStorage.getItem('chat_data_save_long_v6');
     if (savedData) {
       chatData = JSON.parse(savedData);
       atualizarListaGeral();
@@ -236,7 +266,7 @@
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_save_long_v4', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_save_long_v6', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
@@ -305,7 +335,7 @@
     document.getElementById('active-rel').innerText = info.isGroup ? "Grupo Geral" : "Confiança: " + info.relacao + "%";
 
     renderizarMensagens();
-    renderizarOpcoes(); // Garante que as opções só aparecem no chat correto
+    renderizarOpcoes();
   }
 
   function abrirPerfil() {
@@ -358,7 +388,6 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  // RENDERIZA APENAS AS OPÇÕES DESTINADAS AO CHAT ATIVO
   function renderizarOpcoes() {
     const container = document.getElementById('options-container');
     container.innerHTML = '';
@@ -373,11 +402,11 @@
           const acao = o.proximo;
           const delta = o.delta;
           const target = o.target;
-          opcoesAtivas = null; // Limpa opções respondidas
+          opcoesAtivas = null;
           
           pushMsg(activeChat, 'sent', o.texto, null, () => {
             if (delta && target) alterarRelacao(target, delta);
-            setTimeout(acao, 1000);
+            setTimeout(acao, 600);
           });
         };
         container.appendChild(btn);
@@ -385,7 +414,7 @@
     }
   }
 
-  // ENVIO DE MENSAGENS COM RITMO REALISTA
+  // ENVIO E RECEÇÃO NATURAL DE MENSAGENS COM TEMPOS DE DIGITAÇÃO DINÂMICOS
   function pushMsg(chatId, type, text, sender = null, callback = null) {
     if (!chatData[chatId].unlocked) chatData[chatId].unlocked = true;
 
@@ -393,13 +422,20 @@
       const hora = obterHora();
       chatData[chatId].msgs.push({ type, text, sender, time: hora });
       guardarEstado();
-      if (activeChat === chatId) renderizarMensagens();
+      if (activeChat === chatId) {
+        renderizarMensagens();
+        if (type === 'sent') tocarSom('enviado');
+      }
       if (callback) callback();
       return;
     }
 
-    // Calcula tempo realista baseado no comprimento da frase
-    const tempoEscrita = Math.min(Math.max(text.length * 55, 2000), 5000);
+    // Cálculo dinâmico do tempo de escrita baseado na extensão da mensagem
+    const baseTyping = Math.min(Math.max(text.length * 30, 1200), 3200);
+    const randomPause = Math.floor(Math.random() * 400);
+    const tempoTotal = baseTyping + randomPause;
+
+    const statusElem = document.getElementById('active-status');
 
     if (activeChat === chatId) {
       const typingIndicator = document.getElementById('typing-indicator');
@@ -408,42 +444,58 @@
       if (typingIndicator) {
         typingName.innerText = sender ? `${sender} está a escrever` : "a escrever";
         typingIndicator.style.display = 'flex';
+        if (statusElem) {
+          statusElem.innerText = sender ? `${sender} a escrever...` : "a escrever...";
+          statusElem.classList.add('online');
+        }
+        
         const container = document.getElementById('messages-container');
         container.scrollTop = container.scrollHeight;
       }
 
       setTimeout(() => {
         if (typingIndicator) typingIndicator.style.display = 'none';
+        if (statusElem) {
+          statusElem.innerText = chatData[chatId].status;
+          statusElem.classList.remove('online');
+        }
+        
         const hora = obterHora();
         chatData[chatId].msgs.push({ type, text, sender, time: hora });
-        
         guardarEstado();
-        if (activeChat === chatId) renderizarMensagens();
+        if (activeChat === chatId) {
+          renderizarMensagens();
+          tocarSom('recebido');
+        }
         if (callback) callback();
-      }, tempoEscrita);
+      }, tempoTotal);
 
     } else {
-      // Se a mensagem for recebida fora do ecrã do utilizador
       setTimeout(() => {
         const hora = obterHora();
         chatData[chatId].msgs.push({ type, text, sender, time: hora });
         chatData[chatId].unread += 1;
         guardarEstado();
         if (callback) callback();
-      }, tempoEscrita / 2);
+      }, tempoTotal / 1.5);
     }
   }
 
+  // REDIRECIONAMENTO AUTOMÁTICO E APRESENTAÇÃO SUAVE DE OPÇÕES
   function mostrarOpcoes(chatTarget, opcoes) {
     opcoesAtivas = {
       chatId: chatTarget,
       lista: opcoes
     };
-    if (activeChat === chatTarget) {
-      renderizarOpcoes();
-    } else {
-      atualizarListaGeral();
-    }
+    
+    // Pequeno compasso de espera natural antes de surgirem os botões de resposta
+    setTimeout(() => {
+      if (activeChat !== chatTarget) {
+        abrirChat(chatTarget);
+      } else {
+        renderizarOpcoes();
+      }
+    }, 400);
   }
 
   /* ==================== ESTRUTURA NARRATIVA ==================== */
@@ -501,7 +553,7 @@
           });
         });
       });
-    }, 3000);
+    }, 2200);
   }
 
   function cap2_investigacao_inicial() {
