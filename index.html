@@ -11,32 +11,38 @@
     body { background-color: #0b141a; color: #e9edef; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     #app { width: 100%; max-width: 480px; height: 100vh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
     
-    header { background-color: #202c33; padding: 10px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; }
+    header { background-color: #202c33; padding: 10px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; }
     .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #111b21; margin-right: 12px; }
     .user-info { display: flex; flex-direction: column; }
     .user-name { font-weight: 600; font-size: 16px; color: #e9edef; }
     .user-status { font-size: 12px; color: #8696a0; }
+    .reset-btn { background: none; border: none; color: #8696a0; font-size: 12px; cursor: pointer; text-decoration: underline; }
 
     #chat-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; }
-    .msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14.5px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
+    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14.5px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
     .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
-    .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 8px 0; border: 1px solid #222d34; }
+    .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 6px 12px; text-align: center; margin: 8px 0; border: 1px solid #222d34; max-width: 90%; }
     
     .chat-img { width: 100%; max-width: 260px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; }
 
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
     .ticks { color: #53bdeb; margin-left: 2px; }
 
-    .typing { align-self: flex-start; background-color: #202c33; padding: 10px 16px; border-radius: 8px; border-top-left-radius: 0; display: none; }
+    .typing { align-self: flex-start; background-color: #202c33; padding: 10px 16px; border-radius: 8px; border-top-left-radius: 0; display: none; margin-bottom: 8px; }
     .dots { display: flex; gap: 4px; }
     .dot { width: 5px; height: 5px; background-color: #8696a0; border-radius: 50%; animation: blink 1.4s infinite; }
     .dot:nth-child(2) { animation-delay: .2s; }
     .dot:nth-child(3) { animation-delay: .4s; }
 
     #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 6px; }
-    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; }
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; transition: background 0.2s; }
     .opt-btn:active { background-color: #222d34; }
+
+    .input-box-container { display: flex; gap: 8px; padding: 4px 0; }
+    .input-box-container input { flex: 1; background: #111b21; border: 1px solid #222d34; padding: 10px; border-radius: 6px; color: #fff; font-size: 15px; outline: none; }
+    .input-box-container button { background: #00a884; color: #111b21; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
     #name-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
     .modal-box { background: #202c33; padding: 25px; border-radius: 12px; width: 100%; max-width: 340px; text-align: center; border: 1px solid #222d34; }
@@ -55,18 +61,21 @@
   <div id="name-modal" style="display: none;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
-      <p>Introduz o teu nome para sincronizar a conta de mensagens.</p>
+      <p>Introduz o teu nome para iniciar a investigação do desaparecimento de Sofia.</p>
       <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
-      <button onclick="iniciarJogo()">ENTRAR NO CHAT</button>
+      <button onclick="iniciarJogo()">INICIAR JOGO</button>
     </div>
   </div>
 
   <header>
-    <div class="avatar" id="avatar-icon">T</div>
-    <div class="user-info">
-      <div class="user-name" id="contact-name">Tomás</div>
-      <div class="user-status" id="contact-status">online</div>
+    <div class="header-left">
+      <div class="avatar" id="avatar-icon">T</div>
+      <div class="user-info">
+        <div class="user-name" id="contact-name">Tomás</div>
+        <div class="user-status" id="contact-status">online</div>
+      </div>
     </div>
+    <button class="reset-btn" onclick="reiniciarJogo()">Reiniciar</button>
   </header>
 
   <div id="chat-container">
@@ -89,32 +98,26 @@
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   }
 
-  // GUARDA E RECUPERA HISTÓRICO NO NAVEGADOR
   function guardarProgresso(etapa) {
-    localStorage.setItem('jogo_progresso_etapa', etapa);
+    localStorage.setItem('jogo_etapa', etapa);
     localStorage.setItem('jogo_chat_html', chat.innerHTML);
+    localStorage.setItem('jogo_header_name', document.getElementById('contact-name').innerText);
+    localStorage.setItem('jogo_header_avatar', document.getElementById('avatar-icon').innerText);
+    localStorage.setItem('jogo_header_bg', document.getElementById('avatar-icon').style.backgroundColor);
+  }
+
+  function reiniciarJogo() {
+    if (confirm("Tens a certeza que queres reiniciar a história desde o início?")) {
+      localStorage.clear();
+      location.reload();
+    }
   }
 
   window.onload = function() {
     if (!playerName) {
       document.getElementById('name-modal').style.display = 'flex';
     } else {
-      const etapaGuardada = localStorage.getItem('jogo_progresso_etapa');
-      const chatGuardado = localStorage.getItem('jogo_chat_html');
-      
-      if (etapaGuardada && chatGuardado) {
-        chat.innerHTML = chatGuardado;
-        // Reativa o elemento typing que foi sobrescrito
-        const newTyping = document.createElement('div');
-        newTyping.className = 'typing';
-        newTyping.id = 'typing-indicator';
-        newTyping.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-        chat.appendChild(newTyping);
-        
-        carregarEtapaGuardada(etapaGuardada);
-      } else {
-        carregarCapitulo2();
-      }
+      restaurarOuIniciar();
     }
   };
 
@@ -124,7 +127,30 @@
     playerName = input.value.trim();
     localStorage.setItem('player_name_pwa', playerName);
     document.getElementById('name-modal').style.display = 'none';
-    carregarCapitulo2();
+    iniciarCapitulo1();
+  }
+
+  function restaurarOuIniciar() {
+    const etapaGuardada = localStorage.getItem('jogo_etapa');
+    const chatGuardado = localStorage.getItem('jogo_chat_html');
+    
+    if (etapaGuardada && chatGuardado) {
+      chat.innerHTML = chatGuardado;
+      document.getElementById('contact-name').innerText = localStorage.getItem('jogo_header_name') || "Tomás";
+      document.getElementById('avatar-icon').innerText = localStorage.getItem('jogo_header_avatar') || "T";
+      document.getElementById('avatar-icon').style.backgroundColor = localStorage.getItem('jogo_header_bg') || "#00a884";
+      
+      // Re-adiciona o indicador de escrita
+      const newTyping = document.createElement('div');
+      newTyping.className = 'typing';
+      newTyping.id = 'typing-indicator';
+      newTyping.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+      chat.appendChild(newTyping);
+
+      executarEtapa(etapaGuardada);
+    } else {
+      iniciarCapitulo1();
+    }
   }
 
   function adicionarMensagemSistema(texto) {
@@ -184,70 +210,113 @@
       btn.onclick = () => {
         options.innerHTML = '';
         enviarMensagemJogador(opt.texto);
-        setTimeout(opt.proximo, 800);
+        setTimeout(opt.proximo, 600);
       };
       options.appendChild(btn);
     });
   }
 
-  /* FLUXO DO CAPÍTULO 2 COM SAVES */
+  function pedirCodigo(respostaCorreta, proximoSucesso) {
+    options.innerHTML = `
+      <div class="input-box-container">
+        <input type="text" id="codigo-input" placeholder="Digita o código de 4 dígitos..." maxlength="10">
+        <button onclick="validarCodigo('${respostaCorreta}', ${proximoSucesso})">OK</button>
+      </div>
+    `;
+  }
 
-  function carregarCapitulo2() {
-    adicionarMensagemSistema("🔒 CAPÍTULO 2: O ENVELOPE E A PISTA");
-    
-    enviarMensagemNPC("Desculpa a demora, " + playerName + "! Fui ver quem estava no corredor.", 2000, () => {
-      enviarMensagemNPC("Não estava ninguém... mas deixaram um envelope pardo ranhurado debaixo da porta.", 2500, () => {
-        enviarMensagemNPC("Tinha apenas esta nota dobrada lá dentro. Vê isto:", 2000, () => {
-          enviarImagemNPC(
-            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
-            "<i>Nota encontrada no envelope pardo.</i>",
-            3000,
-            () => {
-              enviarMensagemNPC("Está escrito: 'SE QUERES A SOFIA, NÃO CONFIES NO " + playerName.toUpperCase() + "'.", 3000, () => {
-                enviarMensagemNPC("Meteu o TEU nome na nota! Como é que quem deixou isto sabe quem tu és?!", 2500, () => {
-                  mostrarOpcoes([
-                    { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: () => cap2_resposta("incriminar") },
-                    { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: () => cap2_resposta("logica") },
-                    { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: () => cap2_resposta("suspeito") }
-                  ]);
-                  guardarProgresso("cap2_escolha_1");
-                });
-              });
-            }
-          );
+  function validarCodigo(correto, proximoSucesso) {
+    const val = document.getElementById('codigo-input').value.trim();
+    if (val === correto) {
+      options.innerHTML = '';
+      enviarMensagemJogador("Código inserido: " + val);
+      setTimeout(proximoSucesso, 800);
+    } else {
+      alert("Código incorreto! Observa bem a nota manuscrita.");
+    }
+  }
+
+  /* =========================================================================
+     FLUXO CONTINUO DA HISTÓRIA (TODOS OS CAPÍTULOS)
+     ========================================================================= */
+
+  /* CAPÍTULO 1 */
+  function iniciarCapitulo1() {
+    adicionarMensagemSistema("🔒 CONVERSA ENCRIPTADA PONTOS-A-PONTO");
+    enviarMensagemNPC("Por favor diz-me que estás a ver isto, " + playerName + "!", 1500, () => {
+      enviarMensagemNPC("A Sofia desapareceu. O carro dela está abandonado na estrada da serra de Monte Cedo com as portas abertas.", 2500, () => {
+        enviarMensagemNPC("Eu encontrei o telemóvel dela no chão. O teu contacto era o único na lista de chamadas rápidas!", 2500, () => {
+          mostrarOpcoes([
+            { texto: "Como assim?! Ela não me disse nada hoje!", proximo: cap1_resp1 },
+            { texto: "Calma Tomás. Onde estás tu exatamente agora?", proximo: cap1_resp2 }
+          ]);
+          guardarProgresso("cap1_escolha");
         });
       });
     });
   }
 
-  function cap2_resposta(tipo) {
-    let msg = "";
-    if (tipo === "incriminar") msg = "Eu quero acreditar em ti... mas isto é demasiado estranho.";
-    if (tipo === "logica") msg = "Tens razão... Se fosses tu, terias simplesmente bloqueado o meu número.";
-    if (tipo === "suspeito") msg = "Ninguém! Eu só falei contigo... A menos que o telemóvel da Sofia esteja a ser monitorizado.";
+  function cap1_resp1() {
+    enviarMensagemNPC("Pois, nem a mim! Mas escuta... acabei de ouvir passos aqui fora no corredor do apartamento dela.", 2500, () => {
+      cap1_suspense();
+    });
+  }
 
-    enviarMensagemNPC(msg, 2000, () => {
-      cap2_transicao_hacker();
+  function cap1_resp2() {
+    enviarMensagemNPC("Estou no apartamento dela a tentar encontrar alguma pista... Espera! Ouvi barulho à porta!", 2500, () => {
+      cap1_suspense();
+    });
+  }
+
+  function cap1_suspense() {
+    enviarMensagemNPC("Vou ver quem é. Não desligues o chat...", 2000, () => {
+      adicionarMensagemSistema("⏱️ Ligação em suspenso - Tomás ficou offline");
+      setTimeout(() => {
+        iniciarCapitulo2();
+      }, 3000);
+    });
+  }
+
+  /* CAPÍTULO 2 */
+  function iniciarCapitulo2() {
+    adicionarMensagemSistema("🔒 CAPÍTULO 2: O ENVELOPE E A PISTA");
+    enviarMensagemNPC("Desculpa a demora! Não estava ninguém no corredor... mas deixaram um envelope pardo debaixo da porta.", 2500, () => {
+      enviarMensagemNPC("Tinha esta nota dobrada lá dentro com um código no verso:", 2000, () => {
+        enviarImagemNPC(
+          "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+          "<i>Nota: 'NÃO CONFIES NO " + playerName.toUpperCase() + ". CÓDIGO: 1984'</i>",
+          3000,
+          () => {
+            enviarMensagemNPC("Meteu o TEU nome na nota! Como é que quem deixou isto sabe que estamos a falar?!", 2500, () => {
+              mostrarOpcoes([
+                { texto: "Estão a tentar incriminar-me, Tomás! É uma armadilha!", proximo: cap2_transicao_hacker },
+                { texto: "Pensa bem: se fosse eu, tinha atendido o teu contacto?", proximo: cap2_transicao_hacker }
+              ]);
+              guardarProgresso("cap2_escolha");
+            });
+          }
+        );
+      });
     });
   }
 
   function cap2_transicao_hacker() {
-    enviarMensagemNPC("Espera... recebi um aviso do sistema do telemóvel. Há uma nova conversa a ser forçada no meu ecrã.", 2500, () => {
+    enviarMensagemNPC("Acredito em ti... mas espera! O ecrã do telemóvel da Sofia está a piscar a vermelho!", 2500, () => {
       adicionarMensagemSistema("⚠️ UTILIZADOR 'ZERO' ENTROU NA CONVERSA");
       
       setTimeout(() => {
-        document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
+        document.getElementById('contact-name').innerText = "Zero [Hacker]";
         document.getElementById('avatar-icon').innerText = "0";
         document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
         
-        enviarMensagemNPC("Não percas tempo a acusar o " + playerName + ", Tomás.", 2000, () => {
-          enviarMensagemNPC("Quem deixou essa nota queria exatamente que vocês se virassem um contra o outro.", 2500, () => {
-            enviarMensagemNPC("Eu sou quem esteve a vigiar o fórum de Monte Cedo. E sei exatamente onde a Sofia esteve há 3 horas.", 3000, () => {
+        enviarMensagemNPC("Não percam tempo com acusações estúpidas.", 2000, () => {
+          enviarMensagemNPC("Eu sou o 'Zero'. Conectei-me ao telemóvel da Sofia assim que o sinal de GPS foi cortado.", 2500, () => {
+            enviarMensagemNPC("A Sofia tinha uma pasta encriptada na nuvem protegida por um PIN de 4 dígitos. A nota tem a chave.", 2500, () => {
               mostrarOpcoes([
-                { texto: "Quem és tu? Como entraste neste chat?", proximo: () => cap2_zero_resp("identidade") },
-                { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: () => cap2_zero_resp("pista") }
+                { texto: "Eu vi a nota! O código é 1984!", proximo: cap3_desbloqueio },
+                { texto: "Introduzir código no sistema", proximo: () => pedirCodigo("1984", cap3_desbloqueio) }
               ]);
-              guardarProgresso("cap2_zero_espera");
+              guardarProgresso("cap2_hacker");
             });
           });
         });
@@ -255,39 +324,79 @@
     });
   }
 
-  function cap2_zero_resp(tipo) {
-    let msg1 = tipo === "identidade" ? 
-      "A minha identidade não importa. O que importa é que sou a única pessoa com acesso às câmaras do posto de combustível da serra." :
-      "No posto de combustível na saída de Monte Cedo. O carro dela foi filmado pelas câmaras de segurança.";
-    
-    enviarMensagemNPC(msg1, 2500, () => {
-      enviarMensagemNPC("A Sofia passou lá às 18:40. Alguém no banco do passageiro estava a segurar o telemóvel dela.", 2500, () => {
-        adicionarMensagemSistema("⏸️ FIM DO CAPÍTULO 2 - Aguardando descodificação do vídeo...");
-        guardarProgresso("cap2_fim");
-      });
+  /* CAPÍTULO 3 & 4: REVELAÇÃO DAS PASTAS */
+  function cap3_desbloqueio() {
+    adicionarMensagemSistema("🔓 PASTA DESBLOQUEADA COM SUCESSO");
+    enviarMensagemNPC("Excelente. Tinha razão a vosso respeito. Vejam o ficheiro que acabei de extrair:", 2000, () => {
+      enviarImagemNPC(
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
+        "<i>Ficheiro de Log GPS: 'Casarão Velho - Serra de Monte Cedo'</i>",
+        3000,
+        () => {
+          enviarMensagemNPC("A Sofia descobriu um esquema de contaminação de águas no casarão abandonado da serra.", 2500, () => {
+            enviarMensagemNPC("E há uma última mensagem áudio não enviada no telemóvel dela!", 2000, () => {
+              enviarMensagemNPC("🎙️ <i>[Áudio da Sofia 0:14]: 'Tomás, se estás a ouvir isto... o inspetor da câmara municipal não é quem diz ser. Ele está a ir para o Casarão Velho... Socorro!'</i>", 3500, () => {
+                mostrarOpcoes([
+                  { texto: "Tomás, não vás sozinho! Chama a polícia imediatamente!", proximo: () => cap5_final("policia") },
+                  { texto: "Zero, consegues rastrear a localização do inspetor agora?", proximo: () => cap5_final("rastreio") }
+                ]);
+                guardarProgresso("cap3_audio");
+              });
+            });
+          });
+        }
+      );
     });
   }
 
-  function carregarEtapaGuardada(etapa) {
-    if (etapa === "cap2_escolha_1") {
+  /* CAPÍTULO 5: O DESFECHO */
+  function cap5_final(escolha) {
+    adicionarMensagemSistema("🚨 CAPÍTULO FINAL: O CASARÃO VELHO");
+    
+    if (escolha === "policia") {
+      enviarMensagemNPC("Avisei a polícia com as coordenadas GPS que o Zero nos deu!", 2500, () => {
+        enviarMensagemNPC("As patrulhas interceptaram o inspetor no Casarão Velho antes que ele fizesse mal à Sofia!", 3000, () => {
+          enviarMensagemNPC("A Sofia está a salvo! Obrigado " + playerName + ", sem as tuas escolhas e raciocínio rápido não a tínhamos encontrado a tempo!", 3000, () => {
+            adicionarMensagemSistema("🏆 FINAL CONCLUÍDO COM SUCESSO: SALVAMENTO PERFEITO!");
+            guardarProgresso("fim_sucesso");
+          });
+        });
+      });
+    } else {
+      enviarMensagemNPC("Consegui! O Zero bloqueou os travões eletrónicos do carro do suspeito à entrada da serra!", 2500, () => {
+        enviarMensagemNPC("A polícia chegou logo a seguir e libertou a Sofia na arrecadação do casarão!", 3000, () => {
+          enviarMensagemNPC("A Sofia está bem! " + playerName + ", fomos uma equipa imbatível neste chat!", 3000, () => {
+            adicionarMensagemSistema("🏆 FINAL CONCLUÍDO COM SUCESSO: TÁCTICA HACKER!");
+            guardarProgresso("fim_sucesso");
+          });
+        });
+      });
+    }
+  }
+
+  function executarEtapa(etapa) {
+    if (etapa === "cap1_escolha") {
       mostrarOpcoes([
-        { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: () => cap2_resposta("incriminar") },
-        { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: () => cap2_resposta("logica") },
-        { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: () => cap2_resposta("suspeito") }
+        { texto: "Como assim?! Ela não me disse nada hoje!", proximo: cap1_resp1 },
+        { texto: "Calma Tomás. Onde estás tu exatamente agora?", proximo: cap1_resp2 }
       ]);
-    } else if (etapa === "cap2_zero_espera") {
-      document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
-      document.getElementById('avatar-icon').innerText = "0";
-      document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
+    } else if (etapa === "cap2_escolha") {
       mostrarOpcoes([
-        { texto: "Quem és tu? Como entraste neste chat?", proximo: () => cap2_zero_resp("identidade") },
-        { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: () => cap2_zero_resp("pista") }
+        { texto: "Estão a tentar incriminar-me, Tomás! É uma armadilha!", proximo: cap2_transicao_hacker },
+        { texto: "Pensa bem: se fosse eu, tinha atendido o teu contacto?", proximo: cap2_transicao_hacker }
       ]);
-    } else if (etapa === "cap2_fim") {
-      document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
-      document.getElementById('avatar-icon').innerText = "0";
-      document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
-      options.innerHTML = `<div style="text-align:center; padding:10px; color:#8696a0; font-size:13px;">O teu progresso está guardado! Aguarda pelo Capítulo 3.</div>`;
+    } else if (etapa === "cap2_hacker") {
+      mostrarOpcoes([
+        { texto: "Eu vi a nota! O código é 1984!", proximo: cap3_desbloqueio },
+        { texto: "Introduzir código no sistema", proximo: () => pedirCodigo("1984", cap3_desbloqueio) }
+      ]);
+    } else if (etapa === "cap3_audio") {
+      mostrarOpcoes([
+        { texto: "Tomás, não vás sozinho! Chama a polícia imediatamente!", proximo: () => cap5_final("policia") },
+        { texto: "Zero, consegues rastrear a localização do inspetor agora?", proximo: () => cap5_final("rastreio") }
+      ]);
+    } else if (etapa === "fim_sucesso") {
+      options.innerHTML = `<div style="text-align:center; padding:12px; color:#8696a0; font-size:13px;">Jogo Concluído! Clica em "Reiniciar" no topo para jogar novamente.</div>`;
     }
   }
 </script>
