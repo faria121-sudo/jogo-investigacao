@@ -41,7 +41,6 @@
     .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
     .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 6px 0; border: 1px solid #222d34; }
-    .chat-img { width: 100%; max-width: 240px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; }
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
 
     .typing { align-self: flex-start; background-color: #202c33; padding: 8px 14px; border-radius: 8px; border-top-left-radius: 0; display: none; margin-bottom: 6px; }
@@ -86,8 +85,8 @@
       <p id="prof-desc" style="margin-top:10px; color:#e9edef;">Informações pessoais do contacto.</p>
       
       <div style="margin: 15px 0; background:#111b21; padding:12px; border-radius:8px; border:1px solid #222d34;">
-        <span style="font-size:12px; color:#8696a0;">Estatuto do Relacionamento:</span>
-        <div id="prof-status-text" style="font-size:15px; font-weight:bold; color:#ffd279; margin-top:2px;">Amigo Próximo</div>
+        <span style="font-size:12px; color:#8696a0;">Estatuto de Confiança:</span>
+        <div id="prof-status-text" style="font-size:15px; font-weight:bold; color:#ffd279; margin-top:2px;">Desconhecido</div>
         
         <span style="font-size:12px; color:#8696a0; display:block; margin-top:10px;">Afinidade / Confiança:</span>
         <div id="prof-rel-bar" style="font-size:20px; font-weight:bold; color:#00a884; margin-top:2px;">50%</div>
@@ -116,74 +115,8 @@
     </div>
   </header>
 
-  <!-- ECRÃ 1: LISTA DE CHATS (EXPANDIDA COM GRUPO E AMIGOS DA SOFIA) -->
-  <div id="chat-list-view">
-    <div class="chat-item" onclick="abrirChat('grupo')">
-      <div class="avatar" style="background-color: #ff9800;">👥</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Monte Cedo Crew 🍾</span>
-          <span class="chat-item-time" id="time-grupo">19:42</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-grupo">Inês: Alguém viu a Sofia?!</div>
-      </div>
-    </div>
-
-    <div class="chat-item" onclick="abrirChat('tomas')">
-      <div class="avatar" style="background-color: #00a884;">T</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Tomás</span>
-          <span class="chat-item-time" id="time-tomas">19:40</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-tomas">A Sofia desapareceu...</div>
-      </div>
-    </div>
-
-    <div class="chat-item" onclick="abrirChat('ines')">
-      <div class="avatar" style="background-color: #e91e63;">I</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Inês (Melhor Amiga)</span>
-          <span class="chat-item-time" id="time-ines">19:15</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-ines">Ela não me contou tudo...</div>
-      </div>
-    </div>
-
-    <div class="chat-item" onclick="abrirChat('diogo')">
-      <div class="avatar" style="background-color: #607d8b;">D</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Diogo (Ex-Namorado)</span>
-          <span class="chat-item-time" id="time-diogo">18:50</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-diogo">Não ponham as culpas em mim.</div>
-      </div>
-    </div>
-
-    <div class="chat-item" onclick="abrirChat('zero')">
-      <div class="avatar" style="background-color: #e53935;">0</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Zero [Hacker]</span>
-          <span class="chat-item-time" id="time-zero">--:--</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-zero">Sinal encriptado...</div>
-      </div>
-    </div>
-
-    <div class="chat-item" onclick="abrirChat('sofia')">
-      <div class="avatar" style="background-color: #9c27b0;">S</div>
-      <div class="chat-item-details">
-        <div class="chat-item-header">
-          <span class="chat-item-name">Sofia ❤️</span>
-          <span class="chat-item-time" id="time-sofia">Ontem</span>
-        </div>
-        <div class="chat-item-lastmsg" id="lastmsg-sofia">[Visto por último ontem às 23:14]</div>
-      </div>
-    </div>
-  </div>
+  <!-- ECRÃ 1: LISTA DE CHATS -->
+  <div id="chat-list-view"></div>
 
   <!-- ECRÃ 2: SALA DE CHAT -->
   <div id="chat-room-view">
@@ -197,44 +130,44 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_pwa') || "";
+  let playerName = localStorage.getItem('player_name_duskwood_full') || "";
   let activeChat = null;
   
   let chatData = {
     grupo: {
-      name: "Monte Cedo Crew 🍾", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
-      relacao: 50, isGroup: true,
-      desc: "Grupo de amigos da serra de Monte Cedo. Ambiente tenso desde o desaparecimento da Sofia.",
+      name: "Procuro pela Sofia 🔍", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
+      relacao: 50, unlocked: true, isGroup: true,
+      desc: "Grupo criado de urgência pelos amigos da Sofia. Ninguém te conhece.",
       msgs: []
     },
-    tomas: { 
-      name: "Tomás", avatar: "T", bg: "#00a884", status: "online", 
-      relacao: 50,
-      desc: "Amigo próximo. Tem sentimentos fortes por ti e vive angustiado com o desaparecimento da Sofia.",
+    sofia: { 
+      name: "Sofia ❤️", avatar: "S", bg: "#9c27b0", status: "visto por último ontem", 
+      relacao: 0, unlocked: true, isGroup: false,
+      desc: "A rapariga desaparecida. O teu número foi enviado do telemóvel dela.",
       msgs: [] 
     },
     ines: { 
       name: "Inês", avatar: "I", bg: "#e91e63", status: "online", 
-      relacao: 45,
-      desc: "A melhor amiga da Sofia. Sabe muitos segredos, mas guarda um sentimento de ciúme.",
+      relacao: 20, unlocked: false, isGroup: false,
+      desc: "A amiga cética que lidera o grupo e desconfia de ti.",
+      msgs: [] 
+    },
+    tomas: { 
+      name: "Tomás", avatar: "T", bg: "#00a884", status: "online", 
+      relacao: 40, unlocked: false, isGroup: false,
+      desc: "Amigo da Sofia. O único disposto a dar-te o benefício da dúvida.",
       msgs: [] 
     },
     diogo: { 
       name: "Diogo", avatar: "D", bg: "#607d8b", status: "offline", 
-      relacao: 35,
-      desc: "Ex-namorado da Sofia. Frio e impulsivo, mas tem um carinho especial por ti se o ouvires.",
+      relacao: 15, unlocked: false, isGroup: false,
+      desc: "Ex-namorado impulsivo. Guarda segredos sobre a serra de Monte Cedo.",
       msgs: [] 
     },
     zero: { 
-      name: "Zero [Hacker]", avatar: "0", bg: "#e53935", status: "offline", 
-      relacao: 20, 
-      desc: "Hacker enigmático que adora provocar-te e testar a tua inteligência.",
-      msgs: [] 
-    },
-    sofia: { 
-      name: "Sofia ❤️", avatar: "S", bg: "#9c27b0", status: "visto por último ontem", 
-      relacao: 100, 
-      desc: "A tua melhor amiga desaparecida. Guarda respostas decisivas no histórico.",
+      name: "??? [Anónimo]", avatar: "0", bg: "#e53935", status: "offline", 
+      relacao: 10, unlocked: false, isGroup: false,
+      desc: "Figura enigmática que monitoriza a rede e promete revelar segredos.",
       msgs: [] 
     }
   };
@@ -246,11 +179,11 @@
 
   function calcularEstatutoRelaCoes(rel, id) {
     if (id === 'sofia') return "Desaparecida 💔";
-    if (id === 'grupo') return "Grupo de Amigos 👥";
-    if (rel >= 80) return "Amizade Especial ❤️";
-    if (rel >= 60) return "Amigo Próximo ✨";
-    if (rel >= 40) return "Amigo / Aliado";
-    return "Distante / Suspeito ❄️";
+    if (id === 'grupo') return "Grupo de Estranhos 👥";
+    if (id === 'zero') return "Hacker Anónimo 🕶️";
+    if (rel >= 70) return "Aliado Principal ✨";
+    if (rel >= 45) return "Neutro 😐";
+    return "Altamente Suspeito ❄️";
   }
 
   function alterarRelacao(chatId, delta) {
@@ -264,7 +197,7 @@
   }
 
   function reiniciarJogo() {
-    if (confirm("Queres reiniciar toda a investigação e relacionamentos?")) {
+    if (confirm("Queres reiniciar toda a investigação?")) {
       localStorage.clear();
       location.reload();
     }
@@ -282,13 +215,13 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_pwa', playerName);
+    localStorage.setItem('player_name_duskwood_full', playerName);
     document.getElementById('name-modal').style.display = 'none';
     iniciarHistoria();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_save_v4');
+    const savedData = localStorage.getItem('chat_data_save_duskwood_full_v1');
     if (savedData) {
       chatData = JSON.parse(savedData);
       atualizarListaGeral();
@@ -298,21 +231,45 @@
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_save_v4', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_save_duskwood_full_v1', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
   function atualizarListaGeral() {
+    const listView = document.getElementById('chat-list-view');
+    listView.innerHTML = '';
+
     Object.keys(chatData).forEach(id => {
-      const msgs = chatData[id].msgs;
-      if (msgs.length > 0) {
-        const ult = msgs[msgs.length - 1];
-        const elMsg = document.getElementById('lastmsg-' + id);
-        const elTime = document.getElementById('time-' + id);
-        let textoApresentar = ult.text ? ult.text.replace(/<[^>]*>?/gm, '') : "Ficheiro";
-        if (ult.sender) textoApresentar = ult.sender + ": " + textoApresentar;
-        if (elMsg) elMsg.innerText = textoApresentar;
-        if (elTime) elTime.innerText = ult.time || obterHora();
+      const chat = chatData[id];
+      if (chat.unlocked) {
+        const msgs = chat.msgs;
+        let ultTexto = "Nenhuma mensagem...";
+        let ultHora = "--:--";
+
+        if (msgs.length > 0) {
+          const ult = msgs[msgs.length - 1];
+          ultTexto = ult.text ? ult.text.replace(/<[^>]*>?/gm, '') : "Ficheiro";
+          if (ult.sender) ultTexto = ult.sender + ": " + ultTexto;
+          ultHora = ult.time || obterHora();
+        } else if (id === 'sofia') {
+          ultTexto = "[Visto por último ontem às 23:14]";
+          ultHora = "Ontem";
+        }
+
+        const item = document.createElement('div');
+        item.className = 'chat-item';
+        item.onclick = () => abrirChat(id);
+        item.innerHTML = `
+          <div class="avatar" style="background-color: ${chat.bg};">${chat.avatar}</div>
+          <div class="chat-item-details">
+            <div class="chat-item-header">
+              <span class="chat-item-name">${chat.name}</span>
+              <span class="chat-item-time">${ultHora}</span>
+            </div>
+            <div class="chat-item-lastmsg">${ultTexto}</div>
+          </div>
+        `;
+        listView.appendChild(item);
       }
     });
   }
@@ -333,10 +290,6 @@
     document.getElementById('active-rel').innerText = info.isGroup ? "Grupo Geral" : "Confiança: " + info.relacao + "%";
 
     renderizarMensagens();
-
-    if (id === 'sofia' && chatData.sofia.msgs.length === 0) {
-      carregarChatSofia();
-    }
   }
 
   function abrirPerfil() {
@@ -372,16 +325,10 @@
       div.className = 'msg ' + m.type;
       
       let htmlContent = "";
-      if (m.sender) {
-        htmlContent += `<div class="msg-sender">${m.sender}</div>`;
-      }
-      if (m.img) {
-        htmlContent += `<img src="${m.img}" class="chat-img"><br>${m.text}<span class="msg-time">${m.time}</span>`;
-      } else if (m.type === 'system') {
-        htmlContent = m.text;
-      } else {
-        htmlContent += m.text + `<span class="msg-time">${m.time}</span>`;
-      }
+      if (m.sender) htmlContent += `<div class="msg-sender">${m.sender}</div>`;
+      if (m.type === 'system') htmlContent = m.text;
+      else htmlContent += m.text + `<span class="msg-time">${m.time}</span>`;
+      
       div.innerHTML = htmlContent;
       container.appendChild(div);
     });
@@ -395,13 +342,12 @@
     container.scrollTop = container.scrollHeight;
   }
 
-  function pushMsg(chatId, type, text, sender = null, img = null) {
+  function pushMsg(chatId, type, text, sender = null) {
     const hora = obterHora();
-    chatData[chatId].msgs.push({ type, text, sender, img, time: hora });
+    if (!chatData[chatId].unlocked) chatData[chatId].unlocked = true;
+    chatData[chatId].msgs.push({ type, text, sender, time: hora });
     guardarEstado();
-    if (activeChat === chatId) {
-      renderizarMensagens();
-    }
+    if (activeChat === chatId) renderizarMensagens();
   }
 
   function mostrarOpcoes(opcoes) {
@@ -421,62 +367,215 @@
     });
   }
 
-  /* HISTÓRIA E DIÁLOGOS DE GRUPO + INDIVIDUAIS */
+  /* ==================== HISTÓRIA COMPLETA (CAPÍTULOS 1 A 5) ==================== */
 
   function iniciarHistoria() {
-    // DISCUSSÃO INICIAL NO GRUPO DE AMIGOS
-    pushMsg('grupo', 'system', '👥 CHAT DE GRUPO "MONTE CEDO CREW"');
-    pushMsg('grupo', 'received', 'Alguém conseguiu falar com a Sofia hoje?! Ela não responde desde ontem!', 'Inês');
-    pushMsg('grupo', 'received', 'Eu já liguei 10 vezes. O Tomás esteve com ela ontem à noite, ele devia saber!', 'Diogo');
-    pushMsg('grupo', 'received', 'Não me metam nisso! Nós só discutimos 5 minutos!', 'Tomás');
-
-    // CHAT PRIVADO DO TOMÁS (FLIRTE E CONFISSÃO)
-    pushMsg('tomas', 'system', '🔒 CHAT PRIVADO');
-    pushMsg('tomas', 'received', 'Por favor ' + playerName + '... ignora o que o Diogo disse no grupo. Preciso tanto de falar contigo a sós.');
-
-    // CHAT DA INÊS (CIMEIRA E REVELAÇÕES)
-    pushMsg('ines', 'received', 'Olá ' + playerName + '. Sei que o Tomás te procura muito, mas não confies cegamente nele. Tenho um print antigo da Sofia para te mostrar.');
-
-    // CHAT DO DIOGO
-    pushMsg('diogo', 'received', 'Se queres a verdade sobre a Sofia, fala comigo. Todos neste grupo fingem ser santos.');
+    pushMsg('grupo', 'system', '⚠️ FOSTE ADICIONADO AO GRUPO "PROCURO PELA SOFIA"');
+    pushMsg('grupo', 'received', 'Quem quer que estejas a ler isto, responde AGORA!', 'Inês');
+    pushMsg('grupo', 'received', 'A Sofia desapareceu ontem à noite. A última coisa que saiu do telemóvel dela foi este número!', 'Inês');
+    pushMsg('grupo', 'received', 'Inês, tem calma... Podes estar a assustar a pessoa.', 'Tomás');
+    pushMsg('grupo', 'received', 'Assustar?! O telemóvel dela está desligado e este número é a única pista que a polícia tem!', 'Diogo');
 
     abrirChat('grupo');
     
     mostrarOpcoes([
       { 
-        texto: "Calma pessoal, vamos organizar-nos. O Tomás não tem culpa solta!", 
-        target: "tomas", delta: +15,
-        proximo: () => cap1_grupo_resposta("defender_tomas") 
+        texto: "Calma! Eu nem sequer sei quem vocês são nem de onde é essa rapariga!", 
+        target: "tomas", delta: +10,
+        proximo: () => cap1_reacao_grupo("confuso") 
       },
       { 
-        texto: "Diogo, a que horas falaste com ela pela última vez?", 
-        target: "diogo", delta: +10,
-        proximo: () => cap1_grupo_resposta("focar_diogo") 
+        texto: "Vocês estão malucos? Retirem o meu número deste grupo imediatamente.", 
+        target: "ines", delta: -10,
+        proximo: () => cap1_reacao_grupo("hostil") 
       }
     ]);
   }
 
-  function cap1_grupo_resposta(opcao) {
-    if (opcao === "defender_tomas") {
-      pushMsg('grupo', 'received', 'Obrigado por estares do meu lado, ' + playerName + '... ❤️', 'Tomás');
-      pushMsg('grupo', 'received', 'Claro, tu defendes sempre o Tomás! Mas esquecem-se que a Sofia me ligou a chorar!', 'Inês');
+  function cap1_reacao_grupo(tipo) {
+    if (tipo === "confuso") {
+      pushMsg('grupo', 'received', 'Estás a dizer que não conheces a Sofia?! Como é que ela tinha o teu contacto então?!', 'Inês');
+      pushMsg('grupo', 'received', 'Eu disse-vos... Pode ser um erro ou alguém a tentar incriminar outra pessoa.', 'Tomás');
+      
+      setTimeout(() => {
+        pushMsg('tomas', 'system', '🔒 MENSAGEM PRIVADA');
+        pushMsg('tomas', 'received', 'Olá... Desculpa a reação deles no grupo. O meu nome é Tomás.');
+        pushMsg('tomas', 'received', 'Eu acredito que não conheças a Sofia. Mas precisamos de ajuda.');
+        alert("📲 Nova Mensagem Privada de Tomás!");
+      }, 1500);
+
     } else {
-      pushMsg('grupo', 'received', 'Ela mandou-me mensagem às 22:30 a dizer que ia ao casarão velho.', 'Diogo');
-      pushMsg('grupo', 'received', 'O quê?! E só nos dizes isso agora, Diogo?!', 'Inês');
+      pushMsg('grupo', 'received', 'Não vamos tirar nada! A minha amiga está desaparecida!', 'Diogo');
+      pushMsg('grupo', 'received', 'Se não tens nada a ver com isto, prova-o!', 'Inês');
+
+      setTimeout(() => {
+        pushMsg('ines', 'system', '🔒 MENSAGEM PRIVADA');
+        pushMsg('ines', 'received', 'Escuta aqui, ' + playerName + '. Diz-me a verdade de onde conheces a Sofia antes de dar o teu número à polícia.');
+        alert("📲 Nova Mensagem Privada de Inês!");
+      }, 1500);
     }
 
     setTimeout(() => {
-      pushMsg('zero', 'status', 'online');
-      pushMsg('zero', 'system', '⚠️ MENSAGEM INTERCEPTADA');
-      pushMsg('zero', 'received', 'Que grupo tão dramático... Querem saber onde está a Sofia de verdade, ' + playerName + '?');
-      alert("⚡ Notificação: O Hacker 'Zero' acabou de entrar no teu chat!");
+      pushMsg('zero', 'system', '⚠️ MENSAGEM ENCRIPTADA');
+      pushMsg('zero', 'received', 'Não faças o que eles pedem, ' + playerName + '.');
+      pushMsg('zero', 'received', 'Eu fui quem enviou o teu número através do telemóvel da Sofia antes de ela ser levada.');
+      pushMsg('zero', 'received', 'Tu és a única pessoa de fora da cidade... a única em quem posso confiar.');
+      alert("⚡ Alerta: Um contacto anónimo [???] enviou-te uma mensagem encriptada!");
+      
+      setTimeout(cap2_o_casarao, 3000);
+    }, 3000);
+  }
+
+  /* CAPÍTULO 2: O CASARÃO E A PRIMEIRA PISTA */
+  function cap2_o_casarao() {
+    pushMsg('zero', 'received', 'Encontrei um documento antigo da Sofia. Ela estava a investigar a antiga Estação de Tratamento da serra.');
+    pushMsg('zero', 'received', 'Lá dentro há um diário trancado com um código numérico. Precisamos de entrar na conta de e-mail dela.');
+
+    if (activeChat === 'zero') {
+      mostrarOpcoes([
+        { 
+          texto: "Como é que eu posso ajudar a descobrir esse código?", 
+          target: "zero", delta: +10,
+          proximo: () => cap2_investigacao("ajudar") 
+        },
+        { 
+          texto: "Isto é ilegal. Como sei que não foste tu que a raptaste?", 
+          target: "zero", delta: -10,
+          proximo: () => cap2_investigacao("desconfiar") 
+        }
+      ]);
+    } else {
+      setTimeout(cap2_investigacao_auto, 2000);
+    }
+  }
+
+  function cap2_investigacao(opcao) {
+    pushMsg('zero', 'received', 'A Sofia usava como código a data em que o grupo de amigos se zangou no ano passado: 1408.');
+    pushMsg('zero', 'received', 'Acedi ao e-mail dela! Há uma mensagem de ontem enviada pelo Diogo...');
+    pushMsg('zero', 'received', 'O Diogo disse à Sofia: "Se fores ao casarão logo à noite, não voltas mais".');
+    
+    setTimeout(() => {
+      pushMsg('grupo', 'received', 'Pessoal, o Diogo acabou de sair de casa a correr para a serra!', 'Inês');
+      pushMsg('grupo', 'received', 'Ele estava muito nervoso e trazia uma lanterna.', 'Tomás');
+      cap3_o_confronto();
+    }, 2500);
+  }
+
+  function cap2_investigacao_auto() {
+    cap2_investigacao("ajudar");
+  }
+
+  /* CAPÍTULO 3: O CONFRONTO DO DIOGO & TOMÁS */
+  function cap3_o_confronto() {
+    pushMsg('diogo', 'system', '🔒 MENSAGEM PRIVADA');
+    pushMsg('diogo', 'received', playerName + ', se estás a falar com o Tomás, CUIDADO.');
+    pushMsg('diogo', 'received', 'Ele está a mentir-vos a todos! Ele esteve no casarão com a Sofia às 22h!');
+
+    setTimeout(() => {
+      pushMsg('tomas', 'received', 'Não acredites no Diogo! Ele encontrou a minha chave do carro e quer incriminar-me!');
+      pushMsg('tomas', 'received', 'Em quem é que vais confiar, ' + playerName + '?');
+      
+      alert("⚠️ Decisão Crítica: Vais confrontar o Tomás ou o Diogo?");
+      cap3_escolha();
     }, 2000);
+  }
+
+  function cap3_escolha() {
+    if (activeChat === 'tomas' || activeChat === 'diogo' || activeChat === 'grupo') {
+      mostrarOpcoes([
+        { 
+          texto: "Tomás, diz-me a verdade! Tu estiveste ou não com a Sofia no casarão?", 
+          target: "tomas", delta: -15,
+          proximo: () => cap4_revelacao("confrontar_tomas") 
+        },
+        { 
+          texto: "Diogo, tu ameaçaste a Sofia por e-mail! Eu sei de tudo!", 
+          target: "diogo", delta: -15,
+          proximo: () => cap4_revelacao("confrontar_diogo") 
+        }
+      ]);
+    } else {
+      cap4_revelacao("confrontar_tomas");
+    }
+  }
+
+  /* CAPÍTULO 4: A REVELAÇÃO DO DIÁRIO */
+  function cap4_revelacao(escolha) {
+    if (escolha === "confrontar_tomas") {
+      pushMsg('tomas', 'received', 'Pronto... Eu confesso! Eu fui lá ter com ela... Mas quando cheguei, ela já estava a ser levada por alguém num carro preto!');
+    } else {
+      pushMsg('diogo', 'received', 'Aquele e-mail foi da boca para fora! Eu queria protegê-la do Tomás!');
+    }
+
+    pushMsg('zero', 'received', 'CONSEGUI ACESSO ÀS CÂMARAS DA ESTRADA DA SERRA!');
+    pushMsg('zero', 'received', 'Vejo o carro... e vejo a Sofia dentro dele!');
+    pushMsg('zero', 'received', 'Ela deixou cair um papel antes de entrar no carro... o teu número estava lá escrito porque era o número de emergência do fórum!');
+    
+    setTimeout(() => {
+      pushMsg('ines', 'received', 'Gente... acabei de receber uma mensagem da Sofia no telemóvel da mãe dela!!');
+      pushMsg('ines', 'received', 'Ela diz que está presa na antiga mina perto da Estação de Água!');
+      cap5_o_final();
+    }, 3000);
+  }
+
+  /* CAPÍTULO 5: O CLÍMAX E MÚLTIPLOS FINAIS */
+  function cap5_o_final() {
+    pushMsg('grupo', 'system', '🚨 MENSAGEM FINAL - HORA DA DECISÃO');
+    pushMsg('grupo', 'received', 'Temos de ir lá AGORA! Quem é que avisamos primeiro?', 'Inês');
+
+    const relTomas = chatData.tomas.relacao;
+    const relZero = chatData.zero.relacao;
+
+    if (activeChat === 'grupo') {
+      mostrarOpcoes([
+        { 
+          texto: "Avisem a Polícia imediatamente e sigam o Tomás até à mina!", 
+          target: "grupo", delta: +10,
+          proximo: () => calcularFinal("policia_tomas") 
+        },
+        { 
+          texto: "Confiem no Hacker [Zero]! Ele sabe a localização exata das câmaras!", 
+          target: "zero", delta: +20,
+          proximo: () => calcularFinal("hacker") 
+        }
+      ]);
+    } else {
+      calcularFinal("policia_tomas");
+    }
+  }
+
+  function calcularFinal(opcao) {
+    const relTomas = chatData.tomas.relacao;
+    const relZero = chatData.zero.relacao;
+
+    pushMsg('grupo', 'system', '🎬 FIM DA INVESTIGAÇÃO');
+
+    if (opcao === "hacker" || relZero >= 30) {
+      // FINAL A: ALIADO DO HACKER
+      pushMsg('zero', 'received', 'Obrigado pela tua confiança, ' + playerName + '. Guiando a polícia com a minha localização exata, encontramos a Sofia a salvo!');
+      pushMsg('grupo', 'received', 'A SOFIA FOI ENCONTRADA! O raptor era o antigo vigilante da serra!', 'Inês');
+      pushMsg('sofia', 'system', '🔓 CHAT REAVIVADO');
+      pushMsg('sofia', 'received', 'Obrigada por não desistires de mim, ' + playerName + '... Guardei o teu número porque sabia que um estranho seria o único sem preconceitos na cidade. ❤️');
+      alert("🏆 FINAL A: Herói da Cidade! Salvaste a Sofia juntamente com o Hacker Zero!");
+
+    } else if (relTomas >= 50) {
+      // FINAL B: CONFIASTE NO TOMÁS
+      pushMsg('tomas', 'received', 'Chegámos a tempo! O Diogo estava lá a tentar ajudar a Sofia sozinho e o raptor fugiu ao ver a polícia!');
+      pushMsg('grupo', 'received', 'A Sofia está bem no hospital! Obrigado por teres unido o grupo ' + playerName + '!');
+      alert("🎉 FINAL B: União do Grupo! Salvaste a Sofia e provaste a inocência dos amigos!");
+
+    } else {
+      // FINAL C: CONFIANÇA BAIXA / AMBIGUIDADE
+      pushMsg('grupo', 'received', 'A polícia chegou tarde por causa da confusão das chamadas...');
+      pushMsg('grupo', 'received', 'A Sofia conseguiu escapar sozinha pela serra, mas ninguém no grupo volta a falar contigo.');
+      pushMsg('ines', 'received', 'Nunca deveríamos ter confiado num estranho.');
+      alert("⚠️ FINAL C: Verdade Amarga! A Sofia escapou, mas o grupo desfez-se por falta de confiança.");
+    }
   }
 
   function carregarChatSofia() {
     pushMsg('sofia', 'system', '📜 MENSAGENS GUARDADAS - ONTEM 23:10');
-    pushMsg('sofia', 'received', 'Se eu desaparecer... procura no diário do casarão.');
-    pushMsg('sofia', 'received', 'Não deixes que o grupo se destrua. Tu és a única pessoa em quem confio plenamente ❤️');
+    pushMsg('sofia', 'received', 'Se leres isto... não confies em ninguém da cidade.');
   }
 </script>
 
