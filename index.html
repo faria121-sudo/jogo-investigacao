@@ -6,10 +6,12 @@
   <title>WhatsApp - O Desaparecimento de Sofia</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #0b141a; color: #e9edef; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    #app { width: 100%; max-width: 480px; height: 100vh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
     
-    header { background-color: #202c33; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; justify-content: space-between; z-index: 5; }
+    /* Usar dvh para evitar que as barras dos browsers cortem o fundo do ecrã */
+    body { background-color: #0b141a; color: #e9edef; height: 100vh; height: 100dvh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    #app { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
+    
+    header { background-color: #202c33; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; justify-content: space-between; z-index: 5; flex-shrink: 0; }
     .header-title { font-size: 19px; font-weight: bold; color: #8696a0; }
     .header-chat { display: flex; align-items: center; gap: 10px; width: 100%; }
     .back-btn { background: none; border: none; color: #00a884; font-size: 22px; cursor: pointer; padding-right: 6px; }
@@ -34,7 +36,7 @@
     
     .unread-badge { background-color: #00a884; color: #111b21; font-size: 11px; font-weight: bold; border-radius: 50%; min-width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; padding: 0 4px; animation: pop 0.2s ease-out; }
 
-    #chat-room-view { flex: 1; display: none; flex-direction: column; height: 100%; position: relative; }
+    #chat-room-view { flex: 1; display: none; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
     #messages-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; scroll-behavior: smooth; }
     
     .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1); }
@@ -50,8 +52,20 @@
     .dot:nth-child(2) { animation-delay: .2s; }
     .dot:nth-child(3) { animation-delay: .4s; }
 
-    #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 8px; min-height: 60px; }
-    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: transform 0.1s, background-color 0.2s; animation: fadeIn 0.3s ease-in; }
+    /* CORREÇÃO DO CONTENTOR DE OPÇÕES: max-height e overflow para scroll */
+    #options-container { 
+      padding: 10px; 
+      background-color: #202c33; 
+      border-top: 1px solid #222d34; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 8px; 
+      max-height: 45vh; 
+      overflow-y: auto; 
+      flex-shrink: 0; 
+    }
+    
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: transform 0.1s, background-color 0.2s; animation: fadeIn 0.3s ease-in; line-height: 1.3; }
     .opt-btn:active { background-color: #222d34; transform: scale(0.98); }
 
     #name-modal, #profile-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
@@ -124,7 +138,7 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_long_v8') || "";
+  let playerName = localStorage.getItem('player_name_long_v9') || "";
   let activeChat = null;
   let opcoesAtivas = null;
 
@@ -227,13 +241,13 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_long_v8', playerName);
+    localStorage.setItem('player_name_long_v9', playerName);
     document.getElementById('name-modal').style.display = 'none';
     iniciarHistoria();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_save_long_v8');
+    const savedData = localStorage.getItem('chat_data_save_long_v9');
     if (savedData) {
       chatData = JSON.parse(savedData);
       atualizarListaGeral();
@@ -243,7 +257,7 @@
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_save_long_v8', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_save_long_v9', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
@@ -382,6 +396,8 @@
         };
         container.appendChild(btn);
       });
+      // Scroll automático do painel de opções para o topo ao surgir novas escolhas
+      container.scrollTop = 0;
     }
   }
 
@@ -450,7 +466,7 @@
     }, 400);
   }
 
-  /* ==================== HISTÓRIA CORRIGIDA ==================== */
+  /* ==================== HISTÓRIA ==================== */
 
   function iniciarHistoria() {
     pushMsg('grupo', 'system', '⚠️ FOSTE ADICIONADO AO GRUPO "MONTE CEDO CREW"');
