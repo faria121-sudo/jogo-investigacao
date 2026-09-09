@@ -1,15 +1,15 @@
 json
 {
-  "name": "WhatsApp - Notificação",
+  "name": "WhatsApp - Thriller",
   "short_name": "WhatsApp",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0b141a",
-  "theme_color": "#075e54",
+  "theme_color": "#202c33",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3670/3670051.png",
-      "sizes": "512x512",
+      "src": "https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=192&auto=format&fit=crop&q=80",
+      "sizes": "192x192",
       "type": "image/png"
     }
   ]
