@@ -14,7 +14,7 @@
     #app { width: 100%; max-width: 480px; height: 100vh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
     
     header { background-color: #202c33; padding: 10px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #6b7c85; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; margin-right: 12px; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #111b21; margin-right: 12px; }
     .user-info { display: flex; flex-direction: column; }
     .user-name { font-weight: 600; font-size: 16px; color: #e9edef; }
     .user-status { font-size: 12px; color: #8696a0; }
@@ -25,6 +25,8 @@
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
     .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 8px 0; border: 1px solid #222d34; }
     
+    .chat-img { width: 100%; max-width: 260px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; cursor: pointer; }
+
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
     .ticks { color: #53bdeb; margin-left: 2px; }
 
@@ -52,7 +54,7 @@
 <body>
 
 <div id="app">
-  <div id="name-modal">
+  <div id="name-modal" style="display: none;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
       <p>Introduz o teu nome para sincronizar a conta de mensagens.</p>
@@ -62,9 +64,9 @@
   </div>
 
   <header>
-    <div class="avatar" id="avatar-icon">?</div>
+    <div class="avatar" id="avatar-icon">T</div>
     <div class="user-info">
-      <div class="user-name" id="contact-name">Número Desconhecido</div>
+      <div class="user-name" id="contact-name">Tomás</div>
       <div class="user-status" id="contact-status">online</div>
     </div>
   </header>
@@ -79,12 +81,11 @@
 </div>
 
 <script>
-  // Registar Service Worker PWA
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
   }
 
-  let playerName = "";
+  let playerName = localStorage.getItem('player_name_pwa') || "";
   const chat = document.getElementById('chat-container');
   const typing = document.getElementById('typing-indicator');
   const options = document.getElementById('options-container');
@@ -94,25 +95,21 @@
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   }
 
+  window.onload = function() {
+    if (!playerName) {
+      document.getElementById('name-modal').style.display = 'flex';
+    } else {
+      carregarCapitulo2();
+    }
+  };
+
   function iniciarJogo() {
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
+    localStorage.setItem('player_name_pwa', playerName);
     document.getElementById('name-modal').style.display = 'none';
-
-    adicionarMensagemSistema("🔒 As mensagens e as chamadas são descodificadas de ponta a ponta.");
-    
-    setTimeout(() => {
-      enviarMensagemNPC("És mesmo o " + playerName + "?", 1500, () => {
-        enviarMensagemNPC("Preciso urgentemente de falar contigo. Por favor, não me bloqueies.", 2000, () => {
-          mostrarOpcoes([
-            { texto: "Sim, sou eu. Quem fala?", proximo: passo1_explicacao },
-            { texto: "Acho que te enganaste no número. Não conheço este contacto.", proximo: passo1_engano },
-            { texto: "Quem és tu e como arranjaste o meu nome?", proximo: passo1_irritado }
-          ]);
-        });
-      });
-    }, 1000);
+    carregarCapitulo2();
   }
 
   function adicionarMensagemSistema(texto) {
@@ -132,6 +129,21 @@
       const div = document.createElement('div');
       div.className = 'msg received';
       div.innerHTML = texto + `<span class="msg-time">${obterHora()}</span>`;
+      chat.insertBefore(div, typing);
+      chat.scrollTop = chat.scrollHeight;
+      if (callback) callback();
+    }, atraso);
+  }
+
+  function enviarImagemNPC(url, legenda, atraso, callback) {
+    typing.style.display = 'block';
+    chat.scrollTop = chat.scrollHeight;
+
+    setTimeout(() => {
+      typing.style.display = 'none';
+      const div = document.createElement('div');
+      div.className = 'msg received';
+      div.innerHTML = `<img src="${url}" class="chat-img" alt="Pista Visual"><br>${legenda}<span class="msg-time">${obterHora()}</span>`;
       chat.insertBefore(div, typing);
       chat.scrollTop = chat.scrollHeight;
       if (callback) callback();
@@ -161,55 +173,89 @@
     });
   }
 
-  function passo1_explicacao() {
-    enviarMensagemNPC("Graças a Deus...", 1200, () => {
-      enviarMensagemNPC("Não te conheço, " + playerName + ". Mas encontrei o teu número gravado na capa interior do telemóvel da minha irmã.", 3000, () => {
-        enviarMensagemNPC("O meu nome é Tomás. A Sofia desapareceu ontem à noite e tu és a única pista que tenho.", 2500, () => {
-          passo2_escolha_chave();
+  /* CAPÍTULO 2: O ENVELOPE E O HACKER */
+
+  function carregarCapitulo2() {
+    adicionarMensagemSistema("🔒 CAPÍTULO 2: O ENVELOPE E A PISTA");
+    
+    enviarMensagemNPC("Desculpa a demora, " + playerName + "! Fui ver quem estava no corredor.", 2000, () => {
+      enviarMensagemNPC("Não estava ninguém... mas deixaram um envelope pardo ranhurado debaixo da porta.", 2500, () => {
+        enviarMensagemNPC("Tinha apenas esta nota dobrada lá dentro. Vê isto:", 2000, () => {
+          // Imagem fotorrealista da nota manuscrita encontrada no envelope
+          enviarImagemNPC(
+            "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+            "<i>Nota encontrada no envelope pardo.</i>",
+            3000,
+            () => {
+              enviarMensagemNPC("Está escrito: 'SE QUERES A SOFIA, NÃO CONFIES NO " + playerName.toUpperCase() + "'.", 3000, () => {
+                enviarMensagemNPC("Meteu o TEU nome na nota! Como é que quem deixou isto sabe quem tu és?!", 2500, () => {
+                  mostrarOpcoes([
+                    { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: cap2_incriminar },
+                    { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: cap2_logica },
+                    { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: cap2_suspeito }
+                  ]);
+                });
+              });
+            }
+          );
         });
       });
     });
   }
 
-  function passo1_engano() {
-    enviarMensagemNPC("Não me enganei. O teu nome e número estão gravados no telemóvel da Sofia.", 2200, () => {
-      enviarMensagemNPC("O meu nome é Tomás. A minha irmã desapareceu ontem e a polícia diz para esperar 48 horas.", 2500, () => {
-        passo2_escolha_chave();
+  function cap2_incriminar() {
+    enviarMensagemNPC("Eu quero acreditar em ti... mas isto é demasiado estranho.", 2200, () => {
+      cap2_transicao_hacker();
+    });
+  }
+
+  function cap2_logica() {
+    enviarMensagemNPC("Tens razão... Se fosses tu, terias simplesmente bloqueado o meu número.", 2200, () => {
+      cap2_transicao_hacker();
+    });
+  }
+
+  function cap2_suspeito() {
+    enviarMensagemNPC("Ninguém! Eu só falei contigo... A menos que o telemóvel da Sofia esteja a ser monitorizado.", 2500, () => {
+      cap2_transicao_hacker();
+    });
+  }
+
+  function cap2_transicao_hacker() {
+    enviarMensagemNPC("Espera... recebi um aviso do sistema do telemóvel. Há uma nova conversa a ser forçada no meu ecrã.", 2800, () => {
+      adicionarMensagemSistema("⚠️ UTILIZADOR 'ZERO' ENTROU NA CONVERSA");
+      
+      setTimeout(() => {
+        document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
+        document.getElementById('avatar-icon').innerText = "0";
+        document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
+        
+        enviarMensagemNPC("Não percas tempo a acusar o " + playerName + ", Tomás.", 2000, () => {
+          enviarMensagemNPC("Quem deixou essa nota queria exatamente que vocês se virassem um contra o outro.", 2500, () => {
+            enviarMensagemNPC("Eu sou quem esteve a vigiar o fórum de Monte Cedo. E sei exatamente onde a Sofia esteve há 3 horas.", 3000, () => {
+              mostrarOpcoes([
+                { texto: "Quem és tu? Como entraste neste chat?", proximo: cap2_zero_identidade },
+                { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: cap2_zero_pista }
+              ]);
+            });
+          });
+        });
+      }, 1500);
+    });
+  }
+
+  function cap2_zero_identidade() {
+    enviarMensagemNPC("A minha identidade não importa. O que importa é que sou a única pessoa com acesso às câmaras do posto de combustível da serra.", 3000, () => {
+      enviarMensagemNPC("A Sofia passou lá às 18:40. Não estava sozinha.", 2500, () => {
+        adicionarMensagemSistema("Aguardando descodificação do ficheiro de vídeo por Zero...");
       });
     });
   }
 
-  function passo1_irritado() {
-    enviarMensagemNPC("Desculpa o susto! Não é brincadeira nem spam.", 1500, () => {
-      enviarMensagemNPC("Chamo-me Tomás. A minha irmã Sofia desapareceu ontem e o teu contacto é a única coisa recente que ela guardava em segredo.", 2800, () => {
-        passo2_escolha_chave();
-      });
-    });
-  }
-
-  function passo2_escolha_chave() {
-    document.getElementById('contact-name').innerText = "Tomás";
-    document.getElementById('avatar-icon').innerText = "T";
-    document.getElementById('avatar-icon').style.backgroundColor = "#00a884";
-    
-    mostrarOpcoes([
-      { texto: "Sofia? Eu nunca ouvi esse nome na minha vida.", proximo: passo3_desconhecida },
-      { texto: "Gravado na capa do telemóvel? Como assim?", proximo: passo3_detalhe }
-    ]);
-  }
-
-  function passo3_desconhecida() {
-    enviarMensagemNPC("Ela nunca me falou de ti também... Mas foi feito com um x-ato por dentro da capa plástica.", 2500, () => {
-      enviarMensagemNPC("Alguém acabou de bater à porta do apartamento dela. Vou ver quem é...", 2000, () => {
-        adicionarMensagemSistema("Aguardando resposta do contacto...");
-      });
-    });
-  }
-
-  function passo3_detalhe() {
-    enviarMensagemNPC("Alguém raspou o teu número com uma ponta afiada no plástico interior da capa.", 2500, () => {
-      enviarMensagemNPC("Espera... ouvi barulho no corredor. Volto já.", 2000, () => {
-        adicionarMensagemSistema("Aguardando resposta do contacto...");
+  function cap2_zero_pista() {
+    enviarMensagemNPC("No posto de combustível na saída de Monte Cedo. O carro dela foi filmado pelas câmaras de segurança.", 3000, () => {
+      enviarMensagemNPC("Alguém no banco do passageiro estava a segurar o telemóvel dela.", 2500, () => {
+        adicionarMensagemSistema("Aguardando descodificação do ficheiro de vídeo por Zero...");
       });
     });
   }
