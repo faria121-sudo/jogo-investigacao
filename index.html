@@ -70,9 +70,9 @@
   <div id="name-modal" style="display: none;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
-      <p>Escreve o teu nome para iniciar a investigação de Monte Cedo.</p>
+      <p>A tua amiga de infância Sofia desapareceu. Insere o teu nome para responder ao grupo.</p>
       <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
-      <button onclick="iniciarJogo()">INICIAR CASO</button>
+      <button onclick="iniciarJogo()">ENTRAR NO CASO</button>
     </div>
   </div>
 
@@ -119,7 +119,7 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_v10') || "";
+  let playerName = localStorage.getItem('player_name_v11') || "";
   let activeChat = null;
   let opcoesAtivas = null;
 
@@ -148,29 +148,24 @@
 
   let chatData = {
     grupo: {
-      name: "Buscas - Sofia 🔍", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
+      name: "Procura da Sofia 🔍", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
       relacao: 50, unlocked: true, isGroup: true, unread: 0,
-      desc: "Grupo criado pelos amigos da Sofia em Monte Cedo.", msgs: []
+      desc: "Grupo de amigos da Sofia em Monte Cedo.", msgs: []
     },
     ines: { 
-      name: "Inês", avatar: "I", bg: "#e91e63", status: "online", 
-      relacao: 30, unlocked: false, isGroup: false, unread: 0,
-      desc: "A melhor amiga de Sofia. Muito nervosa.", msgs: [] 
+      name: "Inês (Amiga da Sofia)", avatar: "I", bg: "#e91e63", status: "online", 
+      relacao: 50, unlocked: false, isGroup: false, unread: 0,
+      desc: "A amiga de infância da Sofia que ficou em Monte Cedo.", msgs: [] 
     },
     tomas: { 
       name: "Tomás", avatar: "T", bg: "#00a884", status: "online", 
       relacao: 40, unlocked: false, isGroup: false, unread: 0,
-      desc: "Amigo calmo e racional.", msgs: [] 
-    },
-    diogo: { 
-      name: "Diogo", avatar: "D", bg: "#607d8b", status: "offline", 
-      relacao: 25, unlocked: false, isGroup: false, unread: 0,
-      desc: "Ex-namorado da Sofia.", msgs: [] 
+      desc: "Colega de turma da Sofia, muito analítico.", msgs: [] 
     },
     zero: { 
-      name: "??? [Desconhecido]", avatar: "0", bg: "#e53935", status: "offline", 
-      relacao: 15, unlocked: false, isGroup: false, unread: 0,
-      desc: "Contacto encriptado misterioso.", msgs: [] 
+      name: "Anónimo", avatar: "0", bg: "#e53935", status: "offline", 
+      relacao: 20, unlocked: false, isGroup: false, unread: 0,
+      desc: "Número desconhecido que parece saber tudo sobre Monte Cedo.", msgs: [] 
     }
   };
 
@@ -208,13 +203,13 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_v10', playerName);
+    localStorage.setItem('player_name_v11', playerName);
     document.getElementById('name-modal').style.display = 'none';
     iniciarHistoria();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_v10');
+    const savedData = localStorage.getItem('chat_data_v11');
     if (savedData) {
       chatData = JSON.parse(savedData);
       atualizarListaGeral();
@@ -224,7 +219,7 @@
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_v10', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_v11', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
@@ -431,25 +426,25 @@
     }, 400);
   }
 
-  /* ==================== HISTÓRIA COERENTE ==================== */
+  /* ==================== HISTÓRIA COM FIO CONDUTOR ==================== */
 
   function iniciarHistoria() {
-    pushMsg('grupo', 'system', '⚠️ FOSTE ADICIONADO AO GRUPO "BUSCAS - SOFIA"');
+    pushMsg('grupo', 'system', '⚠️ INÊS ADICIONOU-TE AO GRUPO "PROCURA DA SOFIA"');
     
-    pushMsg('grupo', 'received', 'Quem é esta pessoa que entrou no grupo? De quem é este número?', 'Inês', () => {
-      pushMsg('grupo', 'received', 'Calma Inês, foi o telemóvel da Sofia que enviou uma mensagem automática para este número antes de ela desaparecer.', 'Tomás', () => {
-        pushMsg('grupo', 'received', 'A Sofia desapareceu ontem à noite aqui em Monte Cedo! Tu conheces a Sofia de algum lado?!', 'Diogo', () => {
+    pushMsg('grupo', 'received', 'Ainda bem que entraste! ' + playerName + ', precisamos da tua ajuda urgente!', 'Inês', () => {
+      pushMsg('grupo', 'received', 'Como te mudaste de Monte Cedo há anos, tu és a única pessoa em quem a Sofia confiava fora daqui.', 'Inês', () => {
+        pushMsg('grupo', 'received', 'Ela desapareceu ontem à noite e deixou-nos uma mensagem codificada a dizer para te contactar a TI.', 'Tomás', () => {
           abrirChat('grupo');
           mostrarOpcoes('grupo', [
             { 
-              texto: "Não conheço nenhuma Sofia! Vivo noutra cidade, o meu número deve ter sido guardado por engano.", 
-              target: "tomas", delta: +10,
-              proximo: () => cap1_esclarecimento("engano") 
+              texto: "Estou em choque... O que é que dizia essa mensagem exatamente?", 
+              target: "ines", delta: +5,
+              proximo: () => cap1_explicacao("mensagem") 
             },
             { 
-              texto: "Calma! Não sei quem é a Sofia nem o que é Monte Cedo. O que é que se passa?", 
-              target: "ines", delta: +5,
-              proximo: () => cap1_esclarecimento("explicar") 
+              texto: "Eu já não falo com a Sofia há meses. Quem são vocês os dois?", 
+              target: "tomas", delta: 0,
+              proximo: () => cap1_explicacao("quem_sao") 
             }
           ]);
         });
@@ -457,120 +452,92 @@
     });
   }
 
-  function cap1_esclarecimento(tipo) {
-    if (tipo === "engano") {
-      pushMsg('grupo', 'received', 'Não pode ser engano. A mensagem dizia expressamente "Se eu desaparecer, contactem este número".', 'Inês', () => {
-        pushMsg('grupo', 'received', 'Estranho... Se és de fora, porque é que ela confiaria em ti?', 'Tomás', () => {
-          cap1_misterio_desconhecido();
-        });
+  function cap1_explicacao(tipo) {
+    if (tipo === "mensagem") {
+      pushMsg('grupo', 'received', 'Ela mandou uma coordenada da serra e escreveu: "Se eu não voltar, a pessoa de fora sabe a verdade".', 'Inês', () => {
+        cap1_apresentacao_personagens();
       });
     } else {
-      pushMsg('grupo', 'received', 'A Sofia é a nossa amiga. Foi vista pela última vez na zona da serra de Monte Cedo.', 'Inês', () => {
-        pushMsg('grupo', 'received', 'Se a Sofia te mandou uma mensagem de SOS, tu és a nossa única pista.', 'Diogo', () => {
-          cap1_misterio_desconhecido();
+      pushMsg('grupo', 'received', 'Eu sou o Tomás, andava com ela no secundário. E a Inês é a vizinha dela de sempre.', 'Tomás', () => {
+        pushMsg('grupo', 'received', 'Ela guardava segredo das coisas. Mas tu eras a melhor amiga de infância dela.', 'Inês', () => {
+          cap1_apresentacao_personagens();
         });
       });
     }
   }
 
-  function cap1_misterio_desconhecido() {
+  function cap1_apresentacao_personagens() {
+    pushMsg('grupo', 'received', 'Nós fomos à polícia de Monte Cedo, mas eles dizem que temos de esperar 24 horas. Não podemos esperar!', 'Inês', () => {
+      pushMsg('grupo', 'received', 'Entretanto recebeste alguma mensagem estranha no teu telemóvel ultimamente, ' + playerName + '?', 'Tomás', () => {
+        mostrarOpcoes('grupo', [
+          { 
+            texto: "Não recebi nada... Mas vocês estiveram com ela ontem antes de ela sumir?", 
+            target: "tomas", delta: +5,
+            proximo: () => cap2_pistas() 
+          },
+          { 
+            texto: "Deixem-me ver as minhas mensagens privadas. Já volto a falar convosco.", 
+            target: "ines", delta: 0,
+            proximo: () => cap2_pistas() 
+          }
+        ]);
+      });
+    });
+  }
+
+  function cap2_pistas() {
     setTimeout(() => {
-      pushMsg('zero', 'system', '🔒 MENSAGEM PRIVADA ENCRIPTADA');
-      pushMsg('zero', 'received', 'Olá, ' + playerName + '. Vi a tua resposta no grupo.', '???', () => {
-        pushMsg('zero', 'received', 'Eu sou alguém que conhece a fundo os segredos de Monte Cedo. Também quero encontrar a Sofia.', '???', () => {
-          pushMsg('zero', 'received', 'Ela não te contactou por acaso. A Sofia precisava de alguém de FORA do grupo, em quem o raptador não suspeitasse.', '???', () => {
+      pushMsg('zero', 'system', '🔒 MENSAGEM DE NÚMERO DESCONHECIDO');
+      pushMsg('zero', 'received', 'Olá, ' + playerName + '. Não digas ao grupo que estou a falar contigo.', 'Anónimo', () => {
+        pushMsg('zero', 'received', 'Eu sei que já não vives em Monte Cedo, mas o passado da Sofia apanhou-a.', 'Anónimo', () => {
+          pushMsg('zero', 'received', 'A Inês e o Tomás estão a esconder o facto de que a Sofia discutiu com alguém no parque antes de desaparecer.', 'Anónimo', () => {
             mostrarOpcoes('zero', [
               { 
-                texto: "Quem és tu e como sabes o meu nome?", 
-                target: "zero", delta: +5,
-                proximo: () => cap2_pistas_iniciais("quem_es") 
+                texto: "Quem és tu? Como tens o meu número de telefone?", 
+                target: "zero", delta: -5,
+                proximo: () => cap3_confronto("origem") 
               },
               { 
-                texto: "Porque dizes que há um raptador dentro do grupo deles?", 
-                target: "zero", delta: +10,
-                proximo: () => cap2_pistas_iniciais("raptador") 
+                texto: "Com quem é que ela discutiu? Fala logo!", 
+                target: "zero", delta: +5,
+                proximo: () => cap3_confronto("discussao") 
               }
             ]);
           });
         });
       });
-    }, 1500);
+    }, 1200);
   }
 
-  function cap2_pistas_iniciais(origem) {
-    pushMsg('zero', 'received', 'Chama-me "Zero". Descobri que a Sofia guardava informação num cofre antigo na serra.', '???', () => {
-      pushMsg('zero', 'received', 'Mas antes disso, o Tomás e o Diogo estão a esconder algo sobre a noite de ontem.', '???', () => {
+  function cap3_confronto(tipo) {
+    pushMsg('zero', 'received', 'O meu nome não importa. O que importa é que a Sofia deixou um diário trancado no quarto dela.', 'Anónimo', () => {
+      pushMsg('zero', 'received', 'Pede à Inês para procurar no quarto dela. A chave está escondida no antigo esconderijo de infância que só VOCÊS AS DUAS conheciam.', 'Anónimo', () => {
         mostrarOpcoes('zero', [
           { 
-            texto: "Vou falar no privado com o Tomás para saber o que ele viu na serra.", 
-            target: "tomas", delta: +10,
-            proximo: () => cap3_interrogatorio_tomas() 
-          },
-          { 
-            texto: "Vou confrontar o Diogo sobre a discussão que teve com a Sofia.", 
-            target: "diogo", delta: -5,
-            proximo: () => cap3_interrogatorio_diogo() 
+            texto: "Vou mandar mensagem à Inês para ela procurar no sótão.", 
+            target: "ines", delta: +10,
+            proximo: () => cap4_diario_sofia() 
           }
         ]);
       });
     });
   }
 
-  function cap3_interrogatorio_tomas() {
-    pushMsg('tomas', 'system', '💬 CHAT PRIVADO COM TOMÁS');
-    pushMsg('tomas', 'received', 'Olá ' + playerName + '. O que queres saber?', 'Tomás', () => {
-      pushMsg('tomas', 'received', 'A verdade é que eu vi o carro do Diogo a subir para a serra às 22h, mas ele nega ter saído de casa.', 'Tomás', () => {
-        mostrarOpcoes('tomas', [
-          { 
-            texto: "Tens a certeza que era o carro dele? Não queres só incriminá-lo?", 
-            target: "tomas", delta: -10,
-            proximo: () => cap4_revelacao_cofre() 
-          },
-          { 
-            texto: "Acredito em ti. Sabes de algum lugar onde a Sofia se costumava esconder?", 
-            target: "tomas", delta: +15,
-            proximo: () => cap4_revelacao_cofre() 
-          }
-        ]);
-      });
-    });
-  }
-
-  function cap3_interrogatorio_diogo() {
-    pushMsg('diogo', 'system', '💬 CHAT PRIVADO COM DIOGO');
-    pushMsg('diogo', 'received', 'O que é que queres? Não tenho nada a esconder!', 'Diogo', () => {
-      pushMsg('diogo', 'received', 'Eu e a Sofia discutimos sim, mas foi porque ela andava com segredos sobre um cofre na serra de Monte Cedo!', 'Diogo', () => {
-        mostrarOpcoes('diogo', [
-          { 
-            texto: "Que cofre é esse? Onde fica?", 
-            target: "diogo", delta: +5,
-            proximo: () => cap4_revelacao_cofre() 
-          },
-          { 
-            texto: "Se não tens nada a esconder, porque mentiste sobre estar em casa?", 
-            target: "diogo", delta: -15,
-            proximo: () => cap4_revelacao_cofre() 
-          }
-        ]);
-      });
-    });
-  }
-
-  function cap4_revelacao_cofre() {
-    pushMsg('ines', 'system', '💬 MENSAGEM DE INÊS');
-    pushMsg('ines', 'received', playerName + '! Encontrei um bloco de notas no quarto da Sofia!', 'Inês', () => {
-      pushMsg('ines', 'received', 'Ela desenhou o mapa para uma antiga Estação de Água na serra. Disse que havia lá um cofre com um código de 4 dígitos.', 'Inês', () => {
-        pushMsg('ines', 'received', 'Ela escreveu uma nota: "O ano em que Monte Cedo mudou para sempre". Sabes qual é?', 'Inês', () => {
+  function cap4_diario_sofia() {
+    pushMsg('ines', 'system', '💬 CHAT PRIVADO COM INÊS');
+    pushMsg('ines', 'received', playerName + '! Como é que sabias que a chave estava na caixa de madeira do sótão?!', 'Inês', () => {
+      pushMsg('ines', 'received', 'Consegui abrir o diário! A última página fala de um código para um cofre na serra.', 'Inês', () => {
+        pushMsg('ines', 'received', 'A página tem um enigma: "O ano em que a velha ponte de Monte Cedo caiu". Tu lembras-te disto da infância?', 'Inês', () => {
           mostrarOpcoes('ines', [
             { 
-              texto: "Pede ao Zero (Anónimo) para pesquisar a história da cidade na internet.", 
-              target: "zero", delta: +10,
-              proximo: () => cap5_resolucao_codigo("1998") 
+              texto: "Lembro-me perfeitamente! Foi o ano da grande cheia: 2001.", 
+              target: "ines", delta: +10,
+              proximo: () => cap5_conclusao("2001") 
             },
             { 
-              texto: "Pergunta à Inês se houve algum incêndio ou evento grande na cidade em 2004.", 
-              target: "ines", delta: +5,
-              proximo: () => cap5_resolucao_codigo("2004") 
+              texto: "Não me lembro do ano de cabeça... Deixa-me perguntar ao Tomás se ele sabe.", 
+              target: "tomas", delta: +5,
+              proximo: () => cap5_conclusao("pesquisa") 
             }
           ]);
         });
@@ -578,33 +545,21 @@
     });
   }
 
-  function cap5_resolucao_codigo(ano) {
-    if (ano === "1998") {
-      pushMsg('zero', 'received', 'Descobri! Em 1998 foi construída a barragem de Monte Cedo e a antiga estação de água foi abandonada.', '???', () => {
-        cap6_expedicao_final("1998");
-      });
-    } else {
-      pushMsg('ines', 'received', 'Sim! O grande incêndio de 2004! Foi quando fecharam a estação da serra!', 'Inês', () => {
-        cap6_expedicao_final("2004");
-      });
-    }
-  }
-
-  function cap6_expedicao_final(codigo) {
-    pushMsg('grupo', 'system', '🌲 GRUPO DE BUSCA A CAMINHO DA SERRA');
-    pushMsg('grupo', 'received', 'Conseguimos! O código ' + codigo + ' abriu o cofre da estação de água!', 'Inês', () => {
-      pushMsg('grupo', 'received', 'Lá dentro estava a chave de acesso ao bunker subterrâneo!', 'Tomás', () => {
-        pushMsg('grupo', 'received', 'Estamos a ouvir barulhos vindos lá de baixo! A Sofia deve estar lá!', 'Diogo', () => {
+  function cap5_conclusao(caminho) {
+    pushMsg('grupo', 'system', '🌲 INÊS E TOMÁS ESTÃO NA SERRA DE MONTE CEDO');
+    pushMsg('grupo', 'received', 'Usámos o código 2001 e o cofre abriu!!', 'Tomás', () => {
+      pushMsg('grupo', 'received', 'Encontrámos a localização de uma casa abandonada aqui perto! Vamos entrar!', 'Inês', () => {
+        pushMsg('grupo', 'received', ' ' + playerName + ', ouvimos a voz da Sofia lá dentro! Ela está viva!', 'Inês', () => {
           mostrarOpcoes('grupo', [
             { 
-              texto: "Não entrem sozinhos! Chamem a Polícia de Monte Cedo antes de abrir a porta!", 
+              texto: "Chamem a Polícia de Monte Cedo IMEDIATAMENTE antes de entrarem!", 
               target: "grupo", delta: +10,
-              proximo: () => processarFinal("policia") 
+              proximo: () => finalJogo("policia") 
             },
             { 
-              texto: "Tomás e Diogo, entrem juntos com cuidado e salvem a Sofia!", 
-              target: "tomas", delta: +15,
-              proximo: () => processarFinal("coragem") 
+              texto: "Tomás, arromba a porta! Não percam tempo!", 
+              target: "grupo", delta: +5,
+              proximo: () => finalJogo("resgate") 
             }
           ]);
         });
@@ -612,15 +567,15 @@
     });
   }
 
-  function processarFinal(decisao) {
-    pushMsg('grupo', 'system', '🚨 RESGATE CONCLUÍDO');
-    if (decisao === "policia") {
-      pushMsg('ines', 'received', 'A polícia chegou a tempo! O sequestrador foi apanhado e a Sofia está a salvo no hospital!', 'Inês', () => {
-        alert("🎉 FINAL A: Decisão Prudente! A polícia prendeu o culpado e a Sofia foi salva!");
+  function finalJogo(escolha) {
+    pushMsg('grupo', 'system', '🚨 CASO CONCLUÍDO');
+    if (escolha === "policia") {
+      pushMsg('ines', 'received', 'A polícia chegou a tempo! A Sofia foi resgatada e o sequestrador foi preso! Obrigada por nos guiares à distância, ' + playerName + '!', 'Inês', () => {
+        alert("🎉 FINAL BOM: A Sofia foi salva com segurança graças ao teu raciocínio prudente!");
       });
     } else {
-      pushMsg('tomas', 'received', 'Conseguimos!! Arrombámos a porta e tirámos a Sofia de lá antes que o raptor fugisse!', 'Tomás', () => {
-        alert("🏆 FINAL B: Heróis de Monte Cedo! A tua coragem salvou a Sofia a tempo!");
+      pushMsg('tomas', 'received', 'Conseguimos!! O Tomás arrombou a porta e tirámos a Sofia de lá! Ela está bem!', 'Inês', () => {
+        alert("🏆 FINAL HEROICO: Agiste rápido e ajudaste a salvar a tua amiga de infância!");
       });
     }
   }
