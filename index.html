@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>WhatsApp</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#075e54">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #0b141a; color: #e9edef; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    #app { width: 100%; max-width: 480px; height: 100vh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
+    
+    header { background-color: #202c33; padding: 10px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #6b7c85; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #fff; margin-right: 12px; }
+    .user-info { display: flex; flex-direction: column; }
+    .user-name { font-weight: 600; font-size: 16px; color: #e9edef; }
+    .user-status { font-size: 12px; color: #8696a0; }
+
+    #chat-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; }
+    .msg { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14.5px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
+    .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
+    .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
+    .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 8px 0; border: 1px solid #222d34; }
+    
+    .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
+    .ticks { color: #53bdeb; margin-left: 2px; }
+
+    .typing { align-self: flex-start; background-color: #202c33; padding: 10px 16px; border-radius: 8px; border-top-left-radius: 0; display: none; }
+    .dots { display: flex; gap: 4px; }
+    .dot { width: 5px; height: 5px; background-color: #8696a0; border-radius: 50%; animation: blink 1.4s infinite; }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+
+    #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 6px; }
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; }
+    .opt-btn:active { background-color: #222d34; }
+
+    #name-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
+    .modal-box { background: #202c33; padding: 25px; border-radius: 12px; width: 100%; max-width: 340px; text-align: center; border: 1px solid #222d34; }
+    .modal-box h2 { font-size: 18px; margin-bottom: 8px; color: #00a884; }
+    .modal-box p { font-size: 13px; color: #8696a0; margin-bottom: 18px; }
+    .modal-box input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #222d34; background: #111b21; color: #fff; font-size: 16px; margin-bottom: 14px; outline: none; }
+    .modal-box button { width: 100%; padding: 12px; border-radius: 6px; border: none; background: #00a884; color: #111b21; font-weight: bold; font-size: 15px; cursor: pointer; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div id="name-modal">
+    <div class="modal-box">
+      <h2>WHATSAPP</h2>
+      <p>Introduz o teu nome para sincronizar a conta de mensagens.</p>
+      <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
+      <button onclick="iniciarJogo()">ENTRAR NO CHAT</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="avatar" id="avatar-icon">?</div>
+    <div class="user-info">
+      <div class="user-name" id="contact-name">Número Desconhecido</div>
+      <div class="user-status" id="contact-status">online</div>
+    </div>
+  </header>
+
+  <div id="chat-container">
+    <div class="typing" id="typing-indicator">
+      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+
+  <div id="options-container"></div>
+</div>
+
+<script>
+  // Registar Service Worker PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+
+  let playerName = "";
+  const chat = document.getElementById('chat-container');
+  const typing = document.getElementById('typing-indicator');
+  const options = document.getElementById('options-container');
+
+  function obterHora() {
+    const d = new Date();
+    return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+  }
+
+  function iniciarJogo() {
+    const input = document.getElementById('player-name-input');
+    if (!input.value.trim()) return;
+    playerName = input.value.trim();
+    document.getElementById('name-modal').style.display = 'none';
+
+    adicionarMensagemSistema("🔒 As mensagens e as chamadas são descodificadas de ponta a ponta.");
+    
+    setTimeout(() => {
+      enviarMensagemNPC("És mesmo o " + playerName + "?", 1500, () => {
+        enviarMensagemNPC("Preciso urgentemente de falar contigo. Por favor, não me bloqueies.", 2000, () => {
+          mostrarOpcoes([
+            { texto: "Sim, sou eu. Quem fala?", proximo: passo1_explicacao },
+            { texto: "Acho que te enganaste no número. Não conheço este contacto.", proximo: passo1_engano },
+            { texto: "Quem és tu e como arranjaste o meu nome?", proximo: passo1_irritado }
+          ]);
+        });
+      });
+    }, 1000);
+  }
+
+  function adicionarMensagemSistema(texto) {
+    const div = document.createElement('div');
+    div.className = 'msg system';
+    div.innerText = texto;
+    chat.insertBefore(div, typing);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function enviarMensagemNPC(texto, atraso, callback) {
+    typing.style.display = 'block';
+    chat.scrollTop = chat.scrollHeight;
+    
+    setTimeout(() => {
+      typing.style.display = 'none';
+      const div = document.createElement('div');
+      div.className = 'msg received';
+      div.innerHTML = texto + `<span class="msg-time">${obterHora()}</span>`;
+      chat.insertBefore(div, typing);
+      chat.scrollTop = chat.scrollHeight;
+      if (callback) callback();
+    }, atraso);
+  }
+
+  function enviarMensagemJogador(texto) {
+    const div = document.createElement('div');
+    div.className = 'msg sent';
+    div.innerHTML = texto + `<span class="msg-time">${obterHora()} <span class="ticks">✓✓</span></span>`;
+    chat.insertBefore(div, typing);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function mostrarOpcoes(listaOpcoes) {
+    options.innerHTML = '';
+    listaOpcoes.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.innerText = opt.texto;
+      btn.onclick = () => {
+        options.innerHTML = '';
+        enviarMensagemJogador(opt.texto);
+        setTimeout(opt.proximo, 800);
+      };
+      options.appendChild(btn);
+    });
+  }
+
+  function passo1_explicacao() {
+    enviarMensagemNPC("Graças a Deus...", 1200, () => {
+      enviarMensagemNPC("Não te conheço, " + playerName + ". Mas encontrei o teu número gravado na capa interior do telemóvel da minha irmã.", 3000, () => {
+        enviarMensagemNPC("O meu nome é Tomás. A Sofia desapareceu ontem à noite e tu és a única pista que tenho.", 2500, () => {
+          passo2_escolha_chave();
+        });
+      });
+    });
+  }
+
+  function passo1_engano() {
+    enviarMensagemNPC("Não me enganei. O teu nome e número estão gravados no telemóvel da Sofia.", 2200, () => {
+      enviarMensagemNPC("O meu nome é Tomás. A minha irmã desapareceu ontem e a polícia diz para esperar 48 horas.", 2500, () => {
+        passo2_escolha_chave();
+      });
+    });
+  }
+
+  function passo1_irritado() {
+    enviarMensagemNPC("Desculpa o susto! Não é brincadeira nem spam.", 1500, () => {
+      enviarMensagemNPC("Chamo-me Tomás. A minha irmã Sofia desapareceu ontem e o teu contacto é a única coisa recente que ela guardava em segredo.", 2800, () => {
+        passo2_escolha_chave();
+      });
+    });
+  }
+
+  function passo2_escolha_chave() {
+    document.getElementById('contact-name').innerText = "Tomás";
+    document.getElementById('avatar-icon').innerText = "T";
+    document.getElementById('avatar-icon').style.backgroundColor = "#00a884";
+    
+    mostrarOpcoes([
+      { texto: "Sofia? Eu nunca ouvi esse nome na minha vida.", proximo: passo3_desconhecida },
+      { texto: "Gravado na capa do telemóvel? Como assim?", proximo: passo3_detalhe }
+    ]);
+  }
+
+  function passo3_desconhecida() {
+    enviarMensagemNPC("Ela nunca me falou de ti também... Mas foi feito com um x-ato por dentro da capa plástica.", 2500, () => {
+      enviarMensagemNPC("Alguém acabou de bater à porta do apartamento dela. Vou ver quem é...", 2000, () => {
+        adicionarMensagemSistema("Aguardando resposta do contacto...");
+      });
+    });
+  }
+
+  function passo3_detalhe() {
+    enviarMensagemNPC("Alguém raspou o teu número com uma ponta afiada no plástico interior da capa.", 2500, () => {
+      enviarMensagemNPC("Espera... ouvi barulho no corredor. Volto já.", 2000, () => {
+        adicionarMensagemSistema("Aguardando resposta do contacto...");
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
