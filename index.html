@@ -6,8 +6,6 @@
   <title>WhatsApp</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#075e54">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { background-color: #0b141a; color: #e9edef; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
@@ -25,7 +23,7 @@
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
     .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 8px 0; border: 1px solid #222d34; }
     
-    .chat-img { width: 100%; max-width: 260px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; cursor: pointer; }
+    .chat-img { width: 100%; max-width: 260px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; }
 
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
     .ticks { color: #53bdeb; margin-left: 2px; }
@@ -81,10 +79,6 @@
 </div>
 
 <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-
   let playerName = localStorage.getItem('player_name_pwa') || "";
   const chat = document.getElementById('chat-container');
   const typing = document.getElementById('typing-indicator');
@@ -95,11 +89,32 @@
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   }
 
+  // GUARDA E RECUPERA HISTÓRICO NO NAVEGADOR
+  function guardarProgresso(etapa) {
+    localStorage.setItem('jogo_progresso_etapa', etapa);
+    localStorage.setItem('jogo_chat_html', chat.innerHTML);
+  }
+
   window.onload = function() {
     if (!playerName) {
       document.getElementById('name-modal').style.display = 'flex';
     } else {
-      carregarCapitulo2();
+      const etapaGuardada = localStorage.getItem('jogo_progresso_etapa');
+      const chatGuardado = localStorage.getItem('jogo_chat_html');
+      
+      if (etapaGuardada && chatGuardado) {
+        chat.innerHTML = chatGuardado;
+        // Reativa o elemento typing que foi sobrescrito
+        const newTyping = document.createElement('div');
+        newTyping.className = 'typing';
+        newTyping.id = 'typing-indicator';
+        newTyping.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+        chat.appendChild(newTyping);
+        
+        carregarEtapaGuardada(etapaGuardada);
+      } else {
+        carregarCapitulo2();
+      }
     }
   };
 
@@ -116,35 +131,37 @@
     const div = document.createElement('div');
     div.className = 'msg system';
     div.innerText = texto;
-    chat.insertBefore(div, typing);
+    chat.insertBefore(div, document.getElementById('typing-indicator'));
     chat.scrollTop = chat.scrollHeight;
   }
 
   function enviarMensagemNPC(texto, atraso, callback) {
-    typing.style.display = 'block';
+    const typ = document.getElementById('typing-indicator');
+    if(typ) typ.style.display = 'block';
     chat.scrollTop = chat.scrollHeight;
     
     setTimeout(() => {
-      typing.style.display = 'none';
+      if(typ) typ.style.display = 'none';
       const div = document.createElement('div');
       div.className = 'msg received';
       div.innerHTML = texto + `<span class="msg-time">${obterHora()}</span>`;
-      chat.insertBefore(div, typing);
+      chat.insertBefore(div, document.getElementById('typing-indicator'));
       chat.scrollTop = chat.scrollHeight;
       if (callback) callback();
     }, atraso);
   }
 
   function enviarImagemNPC(url, legenda, atraso, callback) {
-    typing.style.display = 'block';
+    const typ = document.getElementById('typing-indicator');
+    if(typ) typ.style.display = 'block';
     chat.scrollTop = chat.scrollHeight;
 
     setTimeout(() => {
-      typing.style.display = 'none';
+      if(typ) typ.style.display = 'none';
       const div = document.createElement('div');
       div.className = 'msg received';
       div.innerHTML = `<img src="${url}" class="chat-img" alt="Pista Visual"><br>${legenda}<span class="msg-time">${obterHora()}</span>`;
-      chat.insertBefore(div, typing);
+      chat.insertBefore(div, document.getElementById('typing-indicator'));
       chat.scrollTop = chat.scrollHeight;
       if (callback) callback();
     }, atraso);
@@ -154,7 +171,7 @@
     const div = document.createElement('div');
     div.className = 'msg sent';
     div.innerHTML = texto + `<span class="msg-time">${obterHora()} <span class="ticks">✓✓</span></span>`;
-    chat.insertBefore(div, typing);
+    chat.insertBefore(div, document.getElementById('typing-indicator'));
     chat.scrollTop = chat.scrollHeight;
   }
 
@@ -173,7 +190,7 @@
     });
   }
 
-  /* CAPÍTULO 2: O ENVELOPE E O HACKER */
+  /* FLUXO DO CAPÍTULO 2 COM SAVES */
 
   function carregarCapitulo2() {
     adicionarMensagemSistema("🔒 CAPÍTULO 2: O ENVELOPE E A PISTA");
@@ -181,7 +198,6 @@
     enviarMensagemNPC("Desculpa a demora, " + playerName + "! Fui ver quem estava no corredor.", 2000, () => {
       enviarMensagemNPC("Não estava ninguém... mas deixaram um envelope pardo ranhurado debaixo da porta.", 2500, () => {
         enviarMensagemNPC("Tinha apenas esta nota dobrada lá dentro. Vê isto:", 2000, () => {
-          // Imagem fotorrealista da nota manuscrita encontrada no envelope
           enviarImagemNPC(
             "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
             "<i>Nota encontrada no envelope pardo.</i>",
@@ -190,10 +206,11 @@
               enviarMensagemNPC("Está escrito: 'SE QUERES A SOFIA, NÃO CONFIES NO " + playerName.toUpperCase() + "'.", 3000, () => {
                 enviarMensagemNPC("Meteu o TEU nome na nota! Como é que quem deixou isto sabe quem tu és?!", 2500, () => {
                   mostrarOpcoes([
-                    { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: cap2_incriminar },
-                    { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: cap2_logica },
-                    { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: cap2_suspeito }
+                    { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: () => cap2_resposta("incriminar") },
+                    { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: () => cap2_resposta("logica") },
+                    { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: () => cap2_resposta("suspeito") }
                   ]);
+                  guardarProgresso("cap2_escolha_1");
                 });
               });
             }
@@ -203,26 +220,19 @@
     });
   }
 
-  function cap2_incriminar() {
-    enviarMensagemNPC("Eu quero acreditar em ti... mas isto é demasiado estranho.", 2200, () => {
-      cap2_transicao_hacker();
-    });
-  }
+  function cap2_resposta(tipo) {
+    let msg = "";
+    if (tipo === "incriminar") msg = "Eu quero acreditar em ti... mas isto é demasiado estranho.";
+    if (tipo === "logica") msg = "Tens razão... Se fosses tu, terias simplesmente bloqueado o meu número.";
+    if (tipo === "suspeito") msg = "Ninguém! Eu só falei contigo... A menos que o telemóvel da Sofia esteja a ser monitorizado.";
 
-  function cap2_logica() {
-    enviarMensagemNPC("Tens razão... Se fosses tu, terias simplesmente bloqueado o meu número.", 2200, () => {
-      cap2_transicao_hacker();
-    });
-  }
-
-  function cap2_suspeito() {
-    enviarMensagemNPC("Ninguém! Eu só falei contigo... A menos que o telemóvel da Sofia esteja a ser monitorizado.", 2500, () => {
+    enviarMensagemNPC(msg, 2000, () => {
       cap2_transicao_hacker();
     });
   }
 
   function cap2_transicao_hacker() {
-    enviarMensagemNPC("Espera... recebi um aviso do sistema do telemóvel. Há uma nova conversa a ser forçada no meu ecrã.", 2800, () => {
+    enviarMensagemNPC("Espera... recebi um aviso do sistema do telemóvel. Há uma nova conversa a ser forçada no meu ecrã.", 2500, () => {
       adicionarMensagemSistema("⚠️ UTILIZADOR 'ZERO' ENTROU NA CONVERSA");
       
       setTimeout(() => {
@@ -234,9 +244,10 @@
           enviarMensagemNPC("Quem deixou essa nota queria exatamente que vocês se virassem um contra o outro.", 2500, () => {
             enviarMensagemNPC("Eu sou quem esteve a vigiar o fórum de Monte Cedo. E sei exatamente onde a Sofia esteve há 3 horas.", 3000, () => {
               mostrarOpcoes([
-                { texto: "Quem és tu? Como entraste neste chat?", proximo: cap2_zero_identidade },
-                { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: cap2_zero_pista }
+                { texto: "Quem és tu? Como entraste neste chat?", proximo: () => cap2_zero_resp("identidade") },
+                { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: () => cap2_zero_resp("pista") }
               ]);
+              guardarProgresso("cap2_zero_espera");
             });
           });
         });
@@ -244,20 +255,40 @@
     });
   }
 
-  function cap2_zero_identidade() {
-    enviarMensagemNPC("A minha identidade não importa. O que importa é que sou a única pessoa com acesso às câmaras do posto de combustível da serra.", 3000, () => {
-      enviarMensagemNPC("A Sofia passou lá às 18:40. Não estava sozinha.", 2500, () => {
-        adicionarMensagemSistema("Aguardando descodificação do ficheiro de vídeo por Zero...");
+  function cap2_zero_resp(tipo) {
+    let msg1 = tipo === "identidade" ? 
+      "A minha identidade não importa. O que importa é que sou a única pessoa com acesso às câmaras do posto de combustível da serra." :
+      "No posto de combustível na saída de Monte Cedo. O carro dela foi filmado pelas câmaras de segurança.";
+    
+    enviarMensagemNPC(msg1, 2500, () => {
+      enviarMensagemNPC("A Sofia passou lá às 18:40. Alguém no banco do passageiro estava a segurar o telemóvel dela.", 2500, () => {
+        adicionarMensagemSistema("⏸️ FIM DO CAPÍTULO 2 - Aguardando descodificação do vídeo...");
+        guardarProgresso("cap2_fim");
       });
     });
   }
 
-  function cap2_zero_pista() {
-    enviarMensagemNPC("No posto de combustível na saída de Monte Cedo. O carro dela foi filmado pelas câmaras de segurança.", 3000, () => {
-      enviarMensagemNPC("Alguém no banco do passageiro estava a segurar o telemóvel dela.", 2500, () => {
-        adicionarMensagemSistema("Aguardando descodificação do ficheiro de vídeo por Zero...");
-      });
-    });
+  function carregarEtapaGuardada(etapa) {
+    if (etapa === "cap2_escolha_1") {
+      mostrarOpcoes([
+        { texto: "Eu juro que não sei de nada! Estão a tentar incriminar-me!", proximo: () => cap2_resposta("incriminar") },
+        { texto: "Tomás, pensa comigo: se eu estivesse envolvido, tinha atendido a tua mensagem?", proximo: () => cap2_resposta("logica") },
+        { texto: "Quem mais sabia que estávamos a falar neste chat?", proximo: () => cap2_resposta("suspeito") }
+      ]);
+    } else if (etapa === "cap2_zero_espera") {
+      document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
+      document.getElementById('avatar-icon').innerText = "0";
+      document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
+      mostrarOpcoes([
+        { texto: "Quem és tu? Como entraste neste chat?", proximo: () => cap2_zero_resp("identidade") },
+        { texto: "Onde é que a Sofia esteve? Diz-nos!", proximo: () => cap2_zero_resp("pista") }
+      ]);
+    } else if (etapa === "cap2_fim") {
+      document.getElementById('contact-name').innerText = "Zero [Desconhecido]";
+      document.getElementById('avatar-icon').innerText = "0";
+      document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
+      options.innerHTML = `<div style="text-align:center; padding:10px; color:#8696a0; font-size:13px;">O teu progresso está guardado! Aguarda pelo Capítulo 3.</div>`;
+    }
   }
 </script>
 
