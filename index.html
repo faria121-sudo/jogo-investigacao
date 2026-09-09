@@ -68,7 +68,7 @@
   <div id="name-modal" style="display: flex;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
-      <p>Acabaste o teu dia de trabalho e estás a relaxar no telemóvel. Insere o teu nome verdadeiro para continuar.</p>
+      <p>Estás em casa numa noite chuvosa. Insere o teu nome verdadeiro para começar a receber mensagens.</p>
       <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
       <button onclick="iniciarJogo()">LIGAR TELEMÓVEL</button>
     </div>
@@ -104,20 +104,30 @@
 </div>
 
 <script>
-  let playerName = localStorage.getItem('player_name_v14') || "";
+  let playerName = localStorage.getItem('player_name_v20') || "";
   let activeChat = null;
   let opcoesAtivas = null;
 
   const chatData = {
     carolina: {
-      name: "Carolina", 
+      name: "Carolina (Desconhecida)", 
       avatarImg: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+      status: "online", unlocked: true, unread: 0, msgs: []
+    },
+    tomas: {
+      name: "Tomás", 
+      avatarImg: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      status: "online", unlocked: true, unread: 0, msgs: []
+    },
+    ines: {
+      name: "Inês", 
+      avatarImg: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80",
       status: "online", unlocked: true, unread: 0, msgs: []
     },
     estranho: {
       name: "Número Desconhecido", 
       avatarImg: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80",
-      status: "visto por último hoje às 21:04", unlocked: false, unread: 0, msgs: []
+      status: "offline", unlocked: false, unread: 0, msgs: []
     }
   };
 
@@ -144,23 +154,23 @@
     const input = document.getElementById('player-name-input');
     if (!input.value.trim()) return;
     playerName = input.value.trim();
-    localStorage.setItem('player_name_v14', playerName);
+    localStorage.setItem('player_name_v20', playerName);
     document.getElementById('name-modal').style.display = 'none';
-    iniciarHistoria();
+    iniciarCapitulo1();
   }
 
   function carregarEstado() {
-    const savedData = localStorage.getItem('chat_data_v14');
+    const savedData = localStorage.getItem('chat_data_v20');
     if (savedData) {
       Object.assign(chatData, JSON.parse(savedData));
       atualizarListaGeral();
     } else {
-      iniciarHistoria();
+      iniciarCapitulo1();
     }
   }
 
   function guardarEstado() {
-    localStorage.setItem('chat_data_v14', JSON.stringify(chatData));
+    localStorage.setItem('chat_data_v20', JSON.stringify(chatData));
     atualizarListaGeral();
   }
 
@@ -296,7 +306,7 @@
         guardarEstado();
         renderizarMensagens();
         if (callback) callback();
-      }, 1400);
+      }, 1200);
     } else {
       setTimeout(() => {
         chatData[chatId].msgs.push({ type, text, img, time: obterHora() });
@@ -312,117 +322,52 @@
     if (activeChat === chatTarget) renderizarOpcoes();
   }
 
-  /* ==================== HISTÓRIA COMPLETA ==================== */
+  /* ==================== CAPÍTULO 1 - REDE DE CONTACTOS ==================== */
 
-  function iniciarHistoria() {
+  function iniciarCapitulo1() {
     atualizarListaGeral();
-    
-    setTimeout(() => {
-      pushMsg('carolina', 'received', 'Olá... Desculpa incomodar a esta hora.', null, () => {
-        pushMsg('carolina', 'received', 'Sei que não nos conhecemos, mas encontrei este número num bilhete dobrado dentro do casaco da minha irmã.', null, () => {
-          pushMsg('carolina', 'received', 'Ela não vem para casa desde ontem. Dizia no bilhete: "Se algo me acontecer, fala com o número ' + playerName + '".', null, () => {
-            pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80', () => {
-              pushMsg('carolina', 'received', 'Tirei foto ao bilhete... Tu conheces a minha irmã? Sabes quem é ela?', () => {
-                abrirChat('carolina');
-                mostrarOpcoes('carolina', [
-                  { 
-                    texto: "Boa noite. Acho que há aqui um engano grave, eu nunca vi essa pessoa nem essa letra.", 
-                    proximo: () => cap1_engano() 
-                  },
-                  { 
-                    texto: "Calma... Eu sou o(a) " + playerName + ", mas não faço ideia de quem seja a tua irmã. O que se passa?", 
-                    proximo: () => cap1_explicar_quem_sou() 
-                  }
-                ]);
-              });
+
+    // Mensagem inicial do Tomás (O teu melhor amigo racional)
+    pushMsg('tomas', 'received', 'Aí ' + playerName + ', viste as notícias de hoje? Está um temporal horrível lá fora.', null, () => {
+      pushMsg('tomas', 'received', 'Fica em casa descansado. Amanhã combinamos aquele café.', null, () => {
+        
+        // Mensagem da Inês (Amiga curiosa e aventureira)
+        pushMsg('ines', 'received', 'Ei!! ' + playerName + '! Estás a ver o grupo da faculdade? Dizem que a Marta não aparece há 24 horas!', null, () => {
+
+          // Mensagem da Estranha (Carolina)
+          pushMsg('carolina', 'received', 'Desculpa incomodar... Por favor responde. Encontrei este número num bilhete escondido no casaco da minha irmã Marta.', null, () => {
+            pushMsg('carolina', 'received', 'A minha irmã desapareceu ontem. No bilhete dizia: "Se algo correr mal, contacta o(a) ' + playerName + '".', null, () => {
+              
+              abrirChat('carolina');
+              mostrarOpcoes('carolina', [
+                {
+                  texto: "Espera lá... O que dizes? Eu não conheço nenhuma Marta! Deves ter o número errado.",
+                  proximo: () => car_resposta_desconfiada()
+                },
+                {
+                  texto: "A Marta?! Como assim? A minha amiga Inês acabou de me dizer que ela estava desaparecida...",
+                  proximo: () => car_resposta_preocupada()
+                }
+              ]);
+
             });
           });
+
         });
-      });
-    }, 1000);
-  }
 
-  function cap1_engano() {
-    pushMsg('carolina', 'received', 'Um engano? Mas o teu nome está escrito no bilhete exatamente assim: ' + playerName + '.', null, () => {
-      pushMsg('carolina', 'received', 'Por favor não me bloqueies. Estou no quarto dela e estou assustada com o que acabei de encontrar na secretária dela...', null, () => {
-        mostrarOpcoes('carolina', [
-          { 
-            texto: "O que é que encontraste na secretária? Mostra-me.", 
-            proximo: () => cap2_revelacao_foto() 
-          }
-        ]);
       });
     });
   }
 
-  function cap1_explicar_quem_sou() {
-    pushMsg('carolina', 'received', 'Eu chamo-me Carolina. A minha irmã chama-se Marta... Ela tem 22 anos.', null, () => {
-      pushMsg('carolina', 'received', 'Se não a conheces, porque é que ela guardava o teu número como emergência?!', null, () => {
-        mostrarOpcoes('carolina', [
-          { 
-            texto: "Também gostava de perceber... O que é que ela estava a fazer antes de desaparecer?", 
-            proximo: () => cap2_revelacao_foto() 
-          }
-        ]);
-      });
-    });
-  }
-
-  function cap2_revelacao_foto() {
-    pushMsg('carolina', 'received', 'Olha para isto. Encontrei um caderno de apontamentos e esta foto marcada.', null, () => {
-      pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
-        pushMsg('carolina', 'received', 'A foto tem uma localização desenhada na praia antiga e a data de HOJE. Achas que devo ir lá ver?', null, () => {
-          mostrarOpcoes('carolina', [
-            { 
-              texto: "Não vás sozinha a lado nenhum à noite! É perigoso.", 
-              proximo: () => cap2_conselho_perigoso() 
-            },
-            { 
-              texto: "Pode ser a única pista que tens. Vai mas com cuidado e mantém-me informado(a).", 
-              proximo: () => cap2_conselho_ir() 
-            }
-          ]);
-        });
-      });
-    });
-  }
-
-  function cap2_conselho_perigoso() {
-    pushMsg('carolina', 'received', 'Tens razão... Mas não consigo ficar em casa parada sem fazer nada.', null, () => {
-      pushMsg('carolina', 'received', 'Vou só chamar um Uber e ver de longe. Prometo que não saio do carro.', null, () => {
-        iniciarCapitulo3();
-      });
-    });
-  }
-
-  function cap2_conselho_ir() {
-    pushMsg('carolina', 'received', 'Vou agora mesmo! Estou a chamar um táxi.', null, () => {
-      pushMsg('carolina', 'received', 'Vou mantendo o chat aberto contigo. Se acontecer algo, tu sabes de tudo.', null, () => {
-        iniciarCapitulo3();
-      });
-    });
-  }
-
-  /* ==================== CAPÍTULO 3 - A SEGUNDA PERSONAGEM ==================== */
-
-  function iniciarCapitulo3() {
-    pushMsg('carolina', 'received', 'Estou a caminho... O caminho para a praia está muito escuro.', null, () => {
-      // Ativa o segundo contacto misterioso
-      chatData.estranho.unlocked = true;
-      guardarEstado();
-
-      // Envia mensagem do Estranho no fundo
-      pushMsg('estranho', 'received', 'Não acredites em nada do que a Carolina te está a dizer.', null, () => {
-        pushMsg('estranho', 'received', 'Ela não é quem diz ser. A irmã dela não está desaparecida... Ela está a usar-te.', null, () => {
+  function car_resposta_desconfiada() {
+    pushMsg('carolina', 'received', 'Não é número errado! O teu nome ' + playerName + ' está escrito à mão no bilhete com este número de telemóvel exacto!', null, () => {
+      pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80', () => {
+        pushMsg('carolina', 'received', 'Olha para isto! Tirei foto. Por favor, diz-me que sabes de alguma coisa...', () => {
           
           mostrarOpcoes('carolina', [
             {
-              texto: "Carolina, acabou de me mandar mensagem um número desconhecido a dizer para não confiar em ti!",
-              proximo: () => cap3_confrontar_carolina()
-            },
-            {
-              texto: "Chegaste à praia? O que estás a ver?",
-              proximo: () => cap3_ignorar_estranho()
+              texto: "Vou falar com os meus amigos Tomás e Inês para perceber se eles sabem de algo e já te digo.",
+              proximo: () => consultar_amigos()
             }
           ]);
 
@@ -431,50 +376,150 @@
     });
   }
 
-  function cap3_confrontar_carolina() {
-    pushMsg('carolina', 'received', 'O quê?! Quem é que te mandou mensagem?!', null, () => {
-      pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=500&auto=format&fit=crop&q=80', () => {
-        pushMsg('carolina', 'received', 'Acabei de chegar à praia... Está aqui um carro parado com as luzes ligadas no meio do nada.', null, () => {
-          pushMsg('carolina', 'received', 'Acho que quem te mandou essa mensagem está dentro deste carro. ' + playerName + ', o que é que eu faço?!', null, () => {
-            mostrarOpcoes('carolina', [
-              {
-                texto: "Tira uma foto ao carro e sai daí IMEDIATAMENTE!",
-                proximo: () => cap3_final_suspense()
-              },
-              {
-                texto: "Aproxime-te devagar para ver a matrícula.",
-                proximo: () => cap3_final_suspense()
-              }
-            ]);
+  function car_resposta_preocupada() {
+    pushMsg('carolina', 'received', 'A tua amiga Inês sabe?! Então é verdade, ela desapareceu mesmo...', null, () => {
+      pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=500&auto=format&fit=crop&q=80', () => {
+        pushMsg('carolina', 'received', 'Encontrei este bilhete com o teu nome no casaco dela. O que é que ela estava a fazer contigo?!', () => {
+          
+          mostrarOpcoes('carolina', [
+            {
+              texto: "Eu juro que não fazia ideia! Dá-me 5 minutos, vou perguntar no meu grupo de amigos.",
+              proximo: () => consultar_amigos()
+            }
+          ]);
+
+        });
+      });
+    });
+  }
+
+  function consultar_amigos() {
+    pushMsg('carolina', 'received', 'Por favor, sê rápido(a). Estou desarmada e sozinha no quarto dela...', null, () => {
+      
+      // Abre a opção para falares com a Inês ou Tomás
+      voltarParaLista();
+
+      // Atualiza o chat do Tomás
+      pushMsg('tomas', 'received', 'O que se passa? Pareces inquieto(a).');
+      // Atualiza o chat da Inês
+      pushMsg('ines', 'received', playerName + '! A irmã da Marta ligou-te?! O que é que ela disse?!');
+
+    });
+  }
+
+  // Interação no chat da Inês (A favor de investigar)
+  function conversaInes() {
+    mostrarOpcoes('ines', [
+      {
+        texto: "Inês, a Carolina diz que a Marta tinha o meu número num bilhete secreto de emergência!",
+        proximo: () => {
+          pushMsg('ines', 'received', 'O QUÊ?! Meu Deus, isto é assustador e brutal ao mesmo tempo!', null, () => {
+            pushMsg('ines', 'received', 'Tu tens de ir ter com a Carolina ou ajudá-la a procurar! Não podes ignorar isto!', null, () => {
+              mostrarOpcoes('ines', [
+                {
+                  texto: "Calma Inês, não vou meter-me numa coisa perigosa sem saber factos.",
+                  proximo: () => ines_chateada()
+                },
+                {
+                  texto: "Tens razão, vou ajudá-la a descobrir o que aconteceu.",
+                  proximo: () => ines_apoia()
+                }
+              ]);
+            });
+          });
+        }
+      }
+    ]);
+  }
+
+  function ines_chateada() {
+    pushMsg('ines', 'received', 'Sério ' + playerName + '? A rapariga está desaparecida e tu estás com medo?! Que desilusão de amigo(a)...', null, () => {
+      chatData.ines.status = "visto por último há 1 min (Chateada)";
+      guardarEstado();
+      verificarProgressoCap1();
+    });
+  }
+
+  function ines_apoia() {
+    pushMsg('ines', 'received', 'Isso mesmo! Sabia que podia contar contigo! Mantém-me a par de TUDO!', null, () => {
+      chatData.ines.status = "online (Amizade +1)";
+      guardarEstado();
+      verificarProgressoCap1();
+    });
+  }
+
+  // Interação no chat do Tomás (Contra meter-se em sarilhos)
+  function conversaTomas() {
+    mostrarOpcoes('tomas', [
+      {
+        texto: "Tomás, uma tal de Carolina acabou de me mandar mensagem a dizer que a irmã desapareceu e tem o meu número...",
+        proximo: () => {
+          pushMsg('tomas', 'received', 'Espera lá. Tu conheces essa Carolina? Conheces a irmã?', null, () => {
+            pushMsg('tomas', 'received', 'Isto cheira-me a burla ou a problemas sérios com a polícia. Bloqueia esse número agora mesmo!', null, () => {
+              mostrarOpcoes('tomas', [
+                {
+                  texto: "Não posso simplesmente bloquear, Tomás! Se a rapariga estiver mesmo em perigo?",
+                  proximo: () => tomas_chateado()
+                },
+                {
+                  texto: "Achas mesmo? Talvez tenhas razão... É melhor ter cuidado.",
+                  proximo: () => tomas_concorda()
+                }
+              ]);
+            });
+          });
+        }
+      }
+    ]);
+  }
+
+  function tomas_chateado() {
+    pushMsg('tomas', 'received', 'Depois não digas que não te avisei. Se te meteres em sarilhos com pessoas estranhas à noite, não me venhas pedir ajuda.', null, () => {
+      chatData.tomas.status = "visto por último há instantes (Irritado)";
+      guardarEstado();
+      verificarProgressoCap1();
+    });
+  }
+
+  function tomas_concorda() {
+    pushMsg('tomas', 'received', 'Ainda bem que usas a cabeça. Ganha juízo e deixa a polícia tratar disso.', null, () => {
+      chatData.tomas.status = "online (Amizade +1)";
+      guardarEstado();
+      verificarProgressoCap1();
+    });
+  }
+
+  function verificarProgressoCap1() {
+    // Quando falares com ambos os amigos, a história avança na Carolina
+    setTimeout(() => {
+      pushMsg('carolina', 'received', playerName + '... Encontrei um diário escondido debaixo do colchão da Marta!', null, () => {
+        pushMsg('carolina', 'received', 'Tem uma foto marcada com uma cruz numa praia abandonada e a data de HOJE!', null, () => {
+          pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
+            
+            // Aparece o Número Desconhecido misterioso a avisar
+            chatData.estranho.unlocked = true;
+            chatData.estranho.status = "online";
+            guardarEstado();
+
+            pushMsg('estranho', 'received', 'Cuidado com o que dizes à Carolina. A irmã dela não é a vítima nesta história.');
+
           });
         });
       });
-    });
+    }, 2000);
   }
 
-  function cap3_ignorar_estranho() {
-    pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=500&auto=format&fit=crop&q=80', () => {
-      pushMsg('carolina', 'received', 'Cheguei à praia... Está aqui um carro parado no escuro com as luzes ligadas.', null, () => {
-        pushMsg('carolina', 'received', 'Acho que vejo alguém lá dentro... Espera, a porta do carro acabou de se abrir.', null, () => {
-          mostrarOpcoes('carolina', [
-            {
-              texto: "Carolina?! Esconde-te! Não deixes que te vejam!",
-              proximo: () => cap3_final_suspense()
-            }
-          ]);
-        });
-      });
-    });
-  }
+  // Lógica para detetar quando o jogador clica nos chats dos amigos
+  const originalAbrirChat = abrirChat;
+  abrirChat = function(id) {
+    originalAbrirChat(id);
+    if (id === 'ines' && chatData.ines.msgs.length <= 2) {
+      conversaInes();
+    } else if (id === 'tomas' && chatData.tomas.msgs.length <= 2) {
+      conversaTomas();
+    }
+  };
 
-  function cap3_final_suspense() {
-    pushMsg('carolina', 'received', 'O meu Deus... A pessoa saiu do carro e está a vir na minha direção!', null, () => {
-      pushMsg('carolina', 'received', 'ELAS SABEM QUE EU ESTOU AQUI!', null, () => {
-        chatData.carolina.status = "visto por último hoje às " + obterHora();
-        guardarEstado();
-      });
-    });
-  }
 </script>
 
 </body>
