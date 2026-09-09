@@ -3,51 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>WhatsApp</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#075e54">
+  <title>WhatsApp - O Desaparecimento de Sofia</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { background-color: #0b141a; color: #e9edef; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
     #app { width: 100%; max-width: 480px; height: 100vh; background-color: #0b141a; display: flex; flex-direction: column; position: relative; }
     
-    header { background-color: #202c33; padding: 10px 14px; display: flex; align-items: center; border-bottom: 1px solid #222d34; justify-content: space-between; position: relative; z-index: 5; }
-    .header-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
-    .avatar { min-width: 40px; width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 18px; color: #111b21; margin-right: 10px; }
-    .user-info { display: flex; flex-direction: column; overflow: hidden; }
-    .user-name { font-weight: 600; font-size: 15px; color: #e9edef; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* CABEÇALHOS */
+    header { background-color: #202c33; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #222d34; justify-content: space-between; z-index: 5; }
+    .header-title { font-size: 19px; font-weight: bold; color: #8696a0; }
+    .header-chat { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .back-btn { background: none; border: none; color: #00a884; font-size: 22px; cursor: pointer; padding-right: 6px; }
+    .avatar { min-width: 40px; width: 40px; height: 40px; border-radius: 50%; background-color: #00a884; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; color: #111b21; }
+    .user-info { display: flex; flex-direction: column; flex: 1; cursor: pointer; }
+    .user-name { font-weight: 600; font-size: 15px; color: #e9edef; }
     .user-status { font-size: 11px; color: #8696a0; }
     
-    /* BOTÃO REINICIAR DESTACADO */
-    .reset-btn { background-color: #2a3942; border: 1px solid #3b4a54; color: #f1f1f1; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; margin-left: 8px; }
-    .reset-btn:active { background-color: #d32f2f; color: #fff; }
+    .rel-badge { font-size: 10px; background: #111b21; padding: 4px 8px; border-radius: 12px; border: 1px solid #00a884; color: #00a884; font-weight: bold; text-align: right; }
+    .reset-btn { background-color: #2a3942; border: 1px solid #3b4a54; color: #f1f1f1; padding: 5px 9px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; }
 
-    #chat-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; }
-    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14.5px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
+    /* LISTA DE CHATS */
+    #chat-list-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .chat-item { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #182229; cursor: pointer; transition: background 0.2s; }
+    .chat-item:active { background-color: #202c33; }
+    .chat-item-details { flex: 1; margin-left: 12px; overflow: hidden; }
+    .chat-item-header { display: flex; justify-content: space-between; margin-bottom: 3px; }
+    .chat-item-name { font-size: 15px; font-weight: 600; color: #e9edef; }
+    .chat-item-time { font-size: 11px; color: #8696a0; }
+    .chat-item-lastmsg { font-size: 13px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ECRÃ DE CHAT INDIVIDUAL */
+    #chat-room-view { flex: 1; display: none; flex-direction: column; height: 100%; position: relative; }
+    #messages-container { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background-image: radial-gradient(#111b21 1px, transparent 0); background-size: 10px 10px; }
+    
+    .msg { max-width: 82%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; position: relative; animation: fadeIn 0.2s ease-in-out; }
+    .msg-sender { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #00a884; }
     .received { background-color: #202c33; align-self: flex-start; color: #e9edef; border-top-left-radius: 0; }
     .sent { background-color: #005c4b; align-self: flex-end; color: #e9edef; border-top-right-radius: 0; }
-    .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 6px 12px; text-align: center; margin: 8px 0; border: 1px solid #222d34; max-width: 90%; }
-    
-    .chat-img { width: 100%; max-width: 260px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; }
-
+    .system { align-self: center; background-color: #182229; color: #ffd279; font-size: 11px; border-radius: 6px; padding: 5px 10px; text-align: center; margin: 6px 0; border: 1px solid #222d34; }
+    .chat-img { width: 100%; max-width: 240px; border-radius: 8px; margin-top: 4px; border: 1px solid #222d34; }
     .msg-time { font-size: 10px; color: #8696a0; float: right; margin-top: 4px; margin-left: 8px; }
-    .ticks { color: #53bdeb; margin-left: 2px; }
 
-    .typing { align-self: flex-start; background-color: #202c33; padding: 10px 16px; border-radius: 8px; border-top-left-radius: 0; display: none; margin-bottom: 8px; }
+    .typing { align-self: flex-start; background-color: #202c33; padding: 8px 14px; border-radius: 8px; border-top-left-radius: 0; display: none; margin-bottom: 6px; }
     .dots { display: flex; gap: 4px; }
     .dot { width: 5px; height: 5px; background-color: #8696a0; border-radius: 50%; animation: blink 1.4s infinite; }
     .dot:nth-child(2) { animation-delay: .2s; }
     .dot:nth-child(3) { animation-delay: .4s; }
 
     #options-container { padding: 10px; background-color: #202c33; border-top: 1px solid #222d34; display: flex; flex-direction: column; gap: 6px; }
-    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 12px; border-radius: 8px; font-size: 14px; text-align: left; cursor: pointer; transition: background 0.2s; }
+    .opt-btn { background-color: #111b21; color: #00a884; border: 1px solid #222d34; padding: 11px; border-radius: 8px; font-size: 13.5px; text-align: left; cursor: pointer; transition: 0.2s; }
     .opt-btn:active { background-color: #222d34; }
 
-    .input-box-container { display: flex; gap: 8px; padding: 4px 0; }
-    .input-box-container input { flex: 1; background: #111b21; border: 1px solid #222d34; padding: 10px; border-radius: 6px; color: #fff; font-size: 15px; outline: none; }
-    .input-box-container button { background: #00a884; color: #111b21; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-    #name-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
+    /* MODAL NOME & PERFIL */
+    #name-modal, #profile-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: #0b141a; display: flex; justify-content: center; align-items: center; z-index: 10; padding: 20px; }
     .modal-box { background: #202c33; padding: 25px; border-radius: 12px; width: 100%; max-width: 340px; text-align: center; border: 1px solid #222d34; }
     .modal-box h2 { font-size: 18px; margin-bottom: 8px; color: #00a884; }
     .modal-box p { font-size: 13px; color: #8696a0; margin-bottom: 18px; }
@@ -61,56 +69,202 @@
 <body>
 
 <div id="app">
+  <!-- MODAL INICIAL -->
   <div id="name-modal" style="display: none;">
     <div class="modal-box">
       <h2>WHATSAPP</h2>
-      <p>Introduz o teu nome para iniciar a investigação do desaparecimento de Sofia.</p>
+      <p>Escreve o teu nome para iniciar a investigação.</p>
       <input type="text" id="player-name-input" placeholder="O teu nome..." maxlength="20">
-      <button onclick="iniciarJogo()">INICIAR JOGO</button>
+      <button onclick="iniciarJogo()">ENTRAR</button>
     </div>
   </div>
 
-  <header>
-    <div class="header-left">
-      <div class="avatar" id="avatar-icon">T</div>
-      <div class="user-info">
-        <div class="user-name" id="contact-name">Tomás</div>
-        <div class="user-status" id="contact-status">online</div>
+  <!-- MODAL DE PERFIL -->
+  <div id="profile-modal" style="display: none;">
+    <div class="modal-box">
+      <h2 id="prof-title">Perfil do Contacto</h2>
+      <p id="prof-desc" style="margin-top:10px; color:#e9edef;">Informações pessoais do contacto.</p>
+      
+      <div style="margin: 15px 0; background:#111b21; padding:12px; border-radius:8px; border:1px solid #222d34;">
+        <span style="font-size:12px; color:#8696a0;">Estatuto do Relacionamento:</span>
+        <div id="prof-status-text" style="font-size:15px; font-weight:bold; color:#ffd279; margin-top:2px;">Amigo Próximo</div>
+        
+        <span style="font-size:12px; color:#8696a0; display:block; margin-top:10px;">Afinidade / Confiança:</span>
+        <div id="prof-rel-bar" style="font-size:20px; font-weight:bold; color:#00a884; margin-top:2px;">50%</div>
       </div>
+      
+      <button onclick="fecharPerfil()">FECHAR</button>
     </div>
+  </div>
+
+  <!-- CABEÇALHO PRINCIPAL -->
+  <header id="main-header">
+    <div class="header-title">WhatsApp</div>
     <button class="reset-btn" onclick="reiniciarJogo()">↺ Reiniciar</button>
   </header>
 
-  <div id="chat-container">
-    <div class="typing" id="typing-indicator">
-      <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <!-- CABEÇALHO DO CHAT -->
+  <header id="chat-header" style="display: none;">
+    <div class="header-chat">
+      <button class="back-btn" onclick="voltarParaLista()">❮</button>
+      <div class="avatar" id="active-avatar">T</div>
+      <div class="user-info" onclick="abrirPerfil()">
+        <div class="user-name" id="active-name">Tomás</div>
+        <div class="user-status" id="active-status">online</div>
+      </div>
+      <div class="rel-badge" id="active-rel">Confiança: 50%</div>
+    </div>
+  </header>
+
+  <!-- ECRÃ 1: LISTA DE CHATS (EXPANDIDA COM GRUPO E AMIGOS DA SOFIA) -->
+  <div id="chat-list-view">
+    <div class="chat-item" onclick="abrirChat('grupo')">
+      <div class="avatar" style="background-color: #ff9800;">👥</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Monte Cedo Crew 🍾</span>
+          <span class="chat-item-time" id="time-grupo">19:42</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-grupo">Inês: Alguém viu a Sofia?!</div>
+      </div>
+    </div>
+
+    <div class="chat-item" onclick="abrirChat('tomas')">
+      <div class="avatar" style="background-color: #00a884;">T</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Tomás</span>
+          <span class="chat-item-time" id="time-tomas">19:40</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-tomas">A Sofia desapareceu...</div>
+      </div>
+    </div>
+
+    <div class="chat-item" onclick="abrirChat('ines')">
+      <div class="avatar" style="background-color: #e91e63;">I</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Inês (Melhor Amiga)</span>
+          <span class="chat-item-time" id="time-ines">19:15</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-ines">Ela não me contou tudo...</div>
+      </div>
+    </div>
+
+    <div class="chat-item" onclick="abrirChat('diogo')">
+      <div class="avatar" style="background-color: #607d8b;">D</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Diogo (Ex-Namorado)</span>
+          <span class="chat-item-time" id="time-diogo">18:50</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-diogo">Não ponham as culpas em mim.</div>
+      </div>
+    </div>
+
+    <div class="chat-item" onclick="abrirChat('zero')">
+      <div class="avatar" style="background-color: #e53935;">0</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Zero [Hacker]</span>
+          <span class="chat-item-time" id="time-zero">--:--</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-zero">Sinal encriptado...</div>
+      </div>
+    </div>
+
+    <div class="chat-item" onclick="abrirChat('sofia')">
+      <div class="avatar" style="background-color: #9c27b0;">S</div>
+      <div class="chat-item-details">
+        <div class="chat-item-header">
+          <span class="chat-item-name">Sofia ❤️</span>
+          <span class="chat-item-time" id="time-sofia">Ontem</span>
+        </div>
+        <div class="chat-item-lastmsg" id="lastmsg-sofia">[Visto por último ontem às 23:14]</div>
+      </div>
     </div>
   </div>
 
-  <div id="options-container"></div>
+  <!-- ECRÃ 2: SALA DE CHAT -->
+  <div id="chat-room-view">
+    <div id="messages-container">
+      <div class="typing" id="typing-indicator">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+    </div>
+    <div id="options-container"></div>
+  </div>
 </div>
 
 <script>
   let playerName = localStorage.getItem('player_name_pwa') || "";
-  const chat = document.getElementById('chat-container');
-  const typing = document.getElementById('typing-indicator');
-  const options = document.getElementById('options-container');
+  let activeChat = null;
+  
+  let chatData = {
+    grupo: {
+      name: "Monte Cedo Crew 🍾", avatar: "👥", bg: "#ff9800", status: "Inês, Tomás, Diogo, Tu",
+      relacao: 50, isGroup: true,
+      desc: "Grupo de amigos da serra de Monte Cedo. Ambiente tenso desde o desaparecimento da Sofia.",
+      msgs: []
+    },
+    tomas: { 
+      name: "Tomás", avatar: "T", bg: "#00a884", status: "online", 
+      relacao: 50,
+      desc: "Amigo próximo. Tem sentimentos fortes por ti e vive angustiado com o desaparecimento da Sofia.",
+      msgs: [] 
+    },
+    ines: { 
+      name: "Inês", avatar: "I", bg: "#e91e63", status: "online", 
+      relacao: 45,
+      desc: "A melhor amiga da Sofia. Sabe muitos segredos, mas guarda um sentimento de ciúme.",
+      msgs: [] 
+    },
+    diogo: { 
+      name: "Diogo", avatar: "D", bg: "#607d8b", status: "offline", 
+      relacao: 35,
+      desc: "Ex-namorado da Sofia. Frio e impulsivo, mas tem um carinho especial por ti se o ouvires.",
+      msgs: [] 
+    },
+    zero: { 
+      name: "Zero [Hacker]", avatar: "0", bg: "#e53935", status: "offline", 
+      relacao: 20, 
+      desc: "Hacker enigmático que adora provocar-te e testar a tua inteligência.",
+      msgs: [] 
+    },
+    sofia: { 
+      name: "Sofia ❤️", avatar: "S", bg: "#9c27b0", status: "visto por último ontem", 
+      relacao: 100, 
+      desc: "A tua melhor amiga desaparecida. Guarda respostas decisivas no histórico.",
+      msgs: [] 
+    }
+  };
 
   function obterHora() {
     const d = new Date();
     return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   }
 
-  function guardarProgresso(etapa) {
-    localStorage.setItem('jogo_etapa', etapa);
-    localStorage.setItem('jogo_chat_html', chat.innerHTML);
-    localStorage.setItem('jogo_header_name', document.getElementById('contact-name').innerText);
-    localStorage.setItem('jogo_header_avatar', document.getElementById('avatar-icon').innerText);
-    localStorage.setItem('jogo_header_bg', document.getElementById('avatar-icon').style.backgroundColor);
+  function calcularEstatutoRelaCoes(rel, id) {
+    if (id === 'sofia') return "Desaparecida 💔";
+    if (id === 'grupo') return "Grupo de Amigos 👥";
+    if (rel >= 80) return "Amizade Especial ❤️";
+    if (rel >= 60) return "Amigo Próximo ✨";
+    if (rel >= 40) return "Amigo / Aliado";
+    return "Distante / Suspeito ❄️";
+  }
+
+  function alterarRelacao(chatId, delta) {
+    if (chatData[chatId]) {
+      chatData[chatId].relacao = Math.min(100, Math.max(0, chatData[chatId].relacao + delta));
+      guardarEstado();
+      if (activeChat === chatId) {
+        document.getElementById('active-rel').innerText = "Confiança: " + chatData[chatId].relacao + "%";
+      }
+    }
   }
 
   function reiniciarJogo() {
-    if (confirm("Tens a certeza que queres reiniciar a história desde o início?")) {
+    if (confirm("Queres reiniciar toda a investigação e relacionamentos?")) {
       localStorage.clear();
       location.reload();
     }
@@ -120,7 +274,7 @@
     if (!playerName) {
       document.getElementById('name-modal').style.display = 'flex';
     } else {
-      restaurarOuIniciar();
+      carregarEstado();
     }
   };
 
@@ -130,264 +284,199 @@
     playerName = input.value.trim();
     localStorage.setItem('player_name_pwa', playerName);
     document.getElementById('name-modal').style.display = 'none';
-    iniciarCapitulo1();
+    iniciarHistoria();
   }
 
-  function restaurarOuIniciar() {
-    const etapaGuardada = localStorage.getItem('jogo_etapa');
-    const chatGuardado = localStorage.getItem('jogo_chat_html');
-    
-    if (etapaGuardada && chatGuardado) {
-      chat.innerHTML = chatGuardado;
-      document.getElementById('contact-name').innerText = localStorage.getItem('jogo_header_name') || "Tomás";
-      document.getElementById('avatar-icon').innerText = localStorage.getItem('jogo_header_avatar') || "T";
-      document.getElementById('avatar-icon').style.backgroundColor = localStorage.getItem('jogo_header_bg') || "#00a884";
-      
-      const newTyping = document.createElement('div');
-      newTyping.className = 'typing';
-      newTyping.id = 'typing-indicator';
-      newTyping.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-      chat.appendChild(newTyping);
-
-      executarEtapa(etapaGuardada);
+  function carregarEstado() {
+    const savedData = localStorage.getItem('chat_data_save_v4');
+    if (savedData) {
+      chatData = JSON.parse(savedData);
+      atualizarListaGeral();
     } else {
-      iniciarCapitulo1();
+      iniciarHistoria();
     }
   }
 
-  function adicionarMensagemSistema(texto) {
-    const div = document.createElement('div');
-    div.className = 'msg system';
-    div.innerText = texto;
-    chat.insertBefore(div, document.getElementById('typing-indicator'));
-    chat.scrollTop = chat.scrollHeight;
+  function guardarEstado() {
+    localStorage.setItem('chat_data_save_v4', JSON.stringify(chatData));
+    atualizarListaGeral();
   }
 
-  function enviarMensagemNPC(texto, atraso, callback) {
-    const typ = document.getElementById('typing-indicator');
-    if(typ) typ.style.display = 'block';
-    chat.scrollTop = chat.scrollHeight;
+  function atualizarListaGeral() {
+    Object.keys(chatData).forEach(id => {
+      const msgs = chatData[id].msgs;
+      if (msgs.length > 0) {
+        const ult = msgs[msgs.length - 1];
+        const elMsg = document.getElementById('lastmsg-' + id);
+        const elTime = document.getElementById('time-' + id);
+        let textoApresentar = ult.text ? ult.text.replace(/<[^>]*>?/gm, '') : "Ficheiro";
+        if (ult.sender) textoApresentar = ult.sender + ": " + textoApresentar;
+        if (elMsg) elMsg.innerText = textoApresentar;
+        if (elTime) elTime.innerText = ult.time || obterHora();
+      }
+    });
+  }
+
+  function abrirChat(id) {
+    activeChat = id;
+    const info = chatData[id];
     
-    setTimeout(() => {
-      if(typ) typ.style.display = 'none';
+    document.getElementById('main-header').style.display = 'none';
+    document.getElementById('chat-list-view').style.display = 'none';
+    document.getElementById('chat-header').style.display = 'flex';
+    document.getElementById('chat-room-view').style.display = 'flex';
+
+    document.getElementById('active-name').innerText = info.name;
+    document.getElementById('active-status').innerText = info.status;
+    document.getElementById('active-avatar').innerText = info.avatar;
+    document.getElementById('active-avatar').style.backgroundColor = info.bg;
+    document.getElementById('active-rel').innerText = info.isGroup ? "Grupo Geral" : "Confiança: " + info.relacao + "%";
+
+    renderizarMensagens();
+
+    if (id === 'sofia' && chatData.sofia.msgs.length === 0) {
+      carregarChatSofia();
+    }
+  }
+
+  function abrirPerfil() {
+    if (!activeChat) return;
+    const info = chatData[activeChat];
+    document.getElementById('prof-title').innerText = info.name;
+    document.getElementById('prof-desc').innerText = info.desc;
+    document.getElementById('prof-rel-bar').innerText = info.isGroup ? "N/A" : info.relacao + "%";
+    document.getElementById('prof-status-text').innerText = calcularEstatutoRelaCoes(info.relacao, activeChat);
+    document.getElementById('profile-modal').style.display = 'flex';
+  }
+
+  function fecharPerfil() {
+    document.getElementById('profile-modal').style.display = 'none';
+  }
+
+  function voltarParaLista() {
+    activeChat = null;
+    document.getElementById('chat-header').style.display = 'none';
+    document.getElementById('chat-room-view').style.display = 'none';
+    document.getElementById('main-header').style.display = 'flex';
+    document.getElementById('chat-list-view').style.display = 'flex';
+    atualizarListaGeral();
+  }
+
+  function renderizarMensagens() {
+    const container = document.getElementById('messages-container');
+    container.innerHTML = '';
+    
+    const msgs = chatData[activeChat].msgs;
+    msgs.forEach(m => {
       const div = document.createElement('div');
-      div.className = 'msg received';
-      div.innerHTML = texto + `<span class="msg-time">${obterHora()}</span>`;
-      chat.insertBefore(div, document.getElementById('typing-indicator'));
-      chat.scrollTop = chat.scrollHeight;
-      if (callback) callback();
-    }, atraso);
+      div.className = 'msg ' + m.type;
+      
+      let htmlContent = "";
+      if (m.sender) {
+        htmlContent += `<div class="msg-sender">${m.sender}</div>`;
+      }
+      if (m.img) {
+        htmlContent += `<img src="${m.img}" class="chat-img"><br>${m.text}<span class="msg-time">${m.time}</span>`;
+      } else if (m.type === 'system') {
+        htmlContent = m.text;
+      } else {
+        htmlContent += m.text + `<span class="msg-time">${m.time}</span>`;
+      }
+      div.innerHTML = htmlContent;
+      container.appendChild(div);
+    });
+
+    const typ = document.createElement('div');
+    typ.className = 'typing';
+    typ.id = 'typing-indicator';
+    typ.innerHTML = '<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+    container.appendChild(typ);
+
+    container.scrollTop = container.scrollHeight;
   }
 
-  function enviarImagemNPC(url, legenda, atraso, callback) {
-    const typ = document.getElementById('typing-indicator');
-    if(typ) typ.style.display = 'block';
-    chat.scrollTop = chat.scrollHeight;
-
-    setTimeout(() => {
-      if(typ) typ.style.display = 'none';
-      const div = document.createElement('div');
-      div.className = 'msg received';
-      div.innerHTML = `<img src="${url}" class="chat-img" alt="Pista Visual"><br>${legenda}<span class="msg-time">${obterHora()}</span>`;
-      chat.insertBefore(div, document.getElementById('typing-indicator'));
-      chat.scrollTop = chat.scrollHeight;
-      if (callback) callback();
-    }, atraso);
+  function pushMsg(chatId, type, text, sender = null, img = null) {
+    const hora = obterHora();
+    chatData[chatId].msgs.push({ type, text, sender, img, time: hora });
+    guardarEstado();
+    if (activeChat === chatId) {
+      renderizarMensagens();
+    }
   }
 
-  function enviarMensagemJogador(texto) {
-    const div = document.createElement('div');
-    div.className = 'msg sent';
-    div.innerHTML = texto + `<span class="msg-time">${obterHora()} <span class="ticks">✓✓</span></span>`;
-    chat.insertBefore(div, document.getElementById('typing-indicator'));
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  function mostrarOpcoes(listaOpcoes) {
-    options.innerHTML = '';
-    listaOpcoes.forEach(opt => {
+  function mostrarOpcoes(opcoes) {
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    opcoes.forEach(o => {
       const btn = document.createElement('button');
       btn.className = 'opt-btn';
-      btn.innerText = opt.texto;
+      btn.innerText = o.texto;
       btn.onclick = () => {
-        options.innerHTML = '';
-        enviarMensagemJogador(opt.texto);
-        setTimeout(opt.proximo, 600);
+        container.innerHTML = '';
+        pushMsg(activeChat, 'sent', o.texto);
+        if (o.delta && o.target) alterarRelacao(o.target, o.delta);
+        setTimeout(o.proximo, 600);
       };
-      options.appendChild(btn);
+      container.appendChild(btn);
     });
   }
 
-  function pedirCodigo(respostaCorreta, proximoSucesso) {
-    options.innerHTML = `
-      <div class="input-box-container">
-        <input type="text" id="codigo-input" placeholder="Digita o código de 4 dígitos..." maxlength="10">
-        <button onclick="validarCodigo('${respostaCorreta}', ${proximoSucesso})">OK</button>
-      </div>
-    `;
-  }
+  /* HISTÓRIA E DIÁLOGOS DE GRUPO + INDIVIDUAIS */
 
-  function validarCodigo(correto, proximoSucesso) {
-    const val = document.getElementById('codigo-input').value.trim();
-    if (val === correto) {
-      options.innerHTML = '';
-      enviarMensagemJogador("Código inserido: " + val);
-      setTimeout(proximoSucesso, 800);
-    } else {
-      alert("Código incorreto! Observa bem a nota manuscrita.");
-    }
-  }
+  function iniciarHistoria() {
+    // DISCUSSÃO INICIAL NO GRUPO DE AMIGOS
+    pushMsg('grupo', 'system', '👥 CHAT DE GRUPO "MONTE CEDO CREW"');
+    pushMsg('grupo', 'received', 'Alguém conseguiu falar com a Sofia hoje?! Ela não responde desde ontem!', 'Inês');
+    pushMsg('grupo', 'received', 'Eu já liguei 10 vezes. O Tomás esteve com ela ontem à noite, ele devia saber!', 'Diogo');
+    pushMsg('grupo', 'received', 'Não me metam nisso! Nós só discutimos 5 minutos!', 'Tomás');
 
-  /* FLUXO COMPLETO DA HISTÓRIA */
+    // CHAT PRIVADO DO TOMÁS (FLIRTE E CONFISSÃO)
+    pushMsg('tomas', 'system', '🔒 CHAT PRIVADO');
+    pushMsg('tomas', 'received', 'Por favor ' + playerName + '... ignora o que o Diogo disse no grupo. Preciso tanto de falar contigo a sós.');
 
-  function iniciarCapitulo1() {
-    adicionarMensagemSistema("🔒 CONVERSA ENCRIPTADA PONTOS-A-PONTO");
-    enviarMensagemNPC("Por favor diz-me que estás a ver isto, " + playerName + "!", 1500, () => {
-      enviarMensagemNPC("A Sofia desapareceu. O carro dela está abandonado na estrada da serra de Monte Cedo com as portas abertas.", 2500, () => {
-        enviarMensagemNPC("Eu encontrei o telemóvel dela no chão. O teu contacto era o único na lista de chamadas rápidas!", 2500, () => {
-          mostrarOpcoes([
-            { texto: "Como assim?! Ela não me disse nada hoje!", proximo: cap1_resp1 },
-            { texto: "Calma Tomás. Onde estás tu exatamente agora?", proximo: cap1_resp2 }
-          ]);
-          guardarProgresso("cap1_escolha");
-        });
-      });
-    });
-  }
+    // CHAT DA INÊS (CIMEIRA E REVELAÇÕES)
+    pushMsg('ines', 'received', 'Olá ' + playerName + '. Sei que o Tomás te procura muito, mas não confies cegamente nele. Tenho um print antigo da Sofia para te mostrar.');
 
-  function cap1_resp1() {
-    enviarMensagemNPC("Pois, nem a mim! Mas escuta... acabei de ouvir passos aqui fora no corredor do apartamento dela.", 2500, cap1_suspense);
-  }
+    // CHAT DO DIOGO
+    pushMsg('diogo', 'received', 'Se queres a verdade sobre a Sofia, fala comigo. Todos neste grupo fingem ser santos.');
 
-  function cap1_resp2() {
-    enviarMensagemNPC("Estou no apartamento dela a tentar encontrar alguma pista... Espera! Ouvi barulho à porta!", 2500, cap1_suspense);
-  }
-
-  function cap1_suspense() {
-    enviarMensagemNPC("Vou ver quem é. Não desligues o chat...", 2000, () => {
-      adicionarMensagemSistema("⏱️ Ligação em suspenso - Tomás ficou offline");
-      setTimeout(iniciarCapitulo2, 3000);
-    });
-  }
-
-  function iniciarCapitulo2() {
-    adicionarMensagemSistema("🔒 CAPÍTULO 2: O ENVELOPE E A PISTA");
-    enviarMensagemNPC("Desculpa a demora! Não estava ninguém no corredor... mas deixaram um envelope pardo debaixo da porta.", 2500, () => {
-      enviarMensagemNPC("Tinha esta nota dobrada lá dentro com um código no verso:", 2000, () => {
-        enviarImagemNPC(
-          "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
-          "<i>Nota: 'NÃO CONFIES NO " + playerName.toUpperCase() + ". CÓDIGO: 1984'</i>",
-          3000,
-          () => {
-            enviarMensagemNPC("Meteu o TEU nome na nota! Como é que quem deixou isto sabe que estamos a falar?!", 2500, () => {
-              mostrarOpcoes([
-                { texto: "Estão a tentar incriminar-me, Tomás! É uma armadilha!", proximo: cap2_transicao_hacker },
-                { texto: "Pensa bem: se fosse eu, tinha atendido o teu contacto?", proximo: cap2_transicao_hacker }
-              ]);
-              guardarProgresso("cap2_escolha");
-            });
-          }
-        );
-      });
-    });
-  }
-
-  function cap2_transicao_hacker() {
-    enviarMensagemNPC("Acredito em ti... mas espera! O ecrã do telemóvel da Sofia está a piscar a vermelho!", 2500, () => {
-      adicionarMensagemSistema("⚠️ UTILIZADOR 'ZERO' ENTROU NA CONVERSA");
-      
-      setTimeout(() => {
-        document.getElementById('contact-name').innerText = "Zero [Hacker]";
-        document.getElementById('avatar-icon').innerText = "0";
-        document.getElementById('avatar-icon').style.backgroundColor = "#e53935";
-        
-        enviarMensagemNPC("Não percam tempo com acusações estúpidas.", 2000, () => {
-          enviarMensagemNPC("Eu sou o 'Zero'. Conectei-me ao telemóvel da Sofia assim que o sinal de GPS foi cortado.", 2500, () => {
-            enviarMensagemNPC("A Sofia tinha uma pasta encriptada na nuvem protegida por um PIN de 4 dígitos. A nota tem a chave.", 2500, () => {
-              mostrarOpcoes([
-                { texto: "Eu vi a nota! O código é 1984!", proximo: cap3_desbloqueio },
-                { texto: "Introduzir código no sistema", proximo: () => pedirCodigo("1984", cap3_desbloqueio) }
-              ]);
-              guardarProgresso("cap2_hacker");
-            });
-          });
-        });
-      }, 1500);
-    });
-  }
-
-  function cap3_desbloqueio() {
-    adicionarMensagemSistema("🔓 PASTA DESBLOQUEADA COM SUCESSO");
-    enviarMensagemNPC("Excelente. Tinha razão a vosso respeito. Vejam o ficheiro que acabei de extrair:", 2000, () => {
-      enviarImagemNPC(
-        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80",
-        "<i>Ficheiro de Log GPS: 'Casarão Velho - Serra de Monte Cedo'</i>",
-        3000,
-        () => {
-          enviarMensagemNPC("A Sofia descobriu um esquema de contaminação de águas no casarão abandonado da serra.", 2500, () => {
-            enviarMensagemNPC("E há uma última mensagem áudio não enviada no telemóvel dela!", 2000, () => {
-              enviarMensagemNPC("🎙️ <i>[Áudio da Sofia 0:14]: 'Tomás, se estás a ouvir isto... o inspetor da câmara municipal não é quem diz ser. Ele está a ir para o Casarão Velho... Socorro!'</i>", 3500, () => {
-                mostrarOpcoes([
-                  { texto: "Tomás, não vás sozinho! Chama a polícia imediatamente!", proximo: () => cap5_final("policia") },
-                  { texto: "Zero, consegues rastrear a localização do inspetor agora?", proximo: () => cap5_final("rastreio") }
-                ]);
-                guardarProgresso("cap3_audio");
-              });
-            });
-          });
-        }
-      );
-    });
-  }
-
-  function cap5_final(escolha) {
-    adicionarMensagemSistema("🚨 CAPÍTULO FINAL: O CASARÃO VELHO");
+    abrirChat('grupo');
     
-    if (escolha === "policia") {
-      enviarMensagemNPC("Avisei a polícia com as coordenadas GPS que o Zero nos deu!", 2500, () => {
-        enviarMensagemNPC("As patrulhas interceptaram o inspetor no Casarão Velho antes que ele fizesse mal à Sofia!", 3000, () => {
-          enviarMensagemNPC("A Sofia está a salvo! Obrigado " + playerName + ", sem as tuas escolhas e raciocínio rápido não a tínhamos encontrado a tempo!", 3000, () => {
-            adicionarMensagemSistema("🏆 FINAL CONCLUÍDO COM SUCESSO: SALVAMENTO PERFEITO!");
-            guardarProgresso("fim_sucesso");
-          });
-        });
-      });
-    } else {
-      enviarMensagemNPC("Consegui! O Zero bloqueou os travões eletrónicos do carro do suspeito à entrada da serra!", 2500, () => {
-        enviarMensagemNPC("A polícia chegou logo a seguir e libertou a Sofia na arrecadação do casarão!", 3000, () => {
-          enviarMensagemNPC("A Sofia está bem! " + playerName + ", fomos uma equipa imbatível neste chat!", 3000, () => {
-            adicionarMensagemSistema("🏆 FINAL CONCLUÍDO COM SUCESSO: TÁCTICA HACKER!");
-            guardarProgresso("fim_sucesso");
-          });
-        });
-      });
-    }
+    mostrarOpcoes([
+      { 
+        texto: "Calma pessoal, vamos organizar-nos. O Tomás não tem culpa solta!", 
+        target: "tomas", delta: +15,
+        proximo: () => cap1_grupo_resposta("defender_tomas") 
+      },
+      { 
+        texto: "Diogo, a que horas falaste com ela pela última vez?", 
+        target: "diogo", delta: +10,
+        proximo: () => cap1_grupo_resposta("focar_diogo") 
+      }
+    ]);
   }
 
-  function executarEtapa(etapa) {
-    if (etapa === "cap1_escolha") {
-      mostrarOpcoes([
-        { texto: "Como assim?! Ela não me disse nada hoje!", proximo: cap1_resp1 },
-        { texto: "Calma Tomás. Onde estás tu exatamente agora?", proximo: cap1_resp2 }
-      ]);
-    } else if (etapa === "cap2_escolha") {
-      mostrarOpcoes([
-        { texto: "Estão a tentar incriminar-me, Tomás! É uma armadilha!", proximo: cap2_transicao_hacker },
-        { texto: "Pensa bem: se fosse eu, tinha atendido o teu contacto?", proximo: cap2_transicao_hacker }
-      ]);
-    } else if (etapa === "cap2_hacker") {
-      mostrarOpcoes([
-        { texto: "Eu vi a nota! O código é 1984!", proximo: cap3_desbloqueio },
-        { texto: "Introduzir código no sistema", proximo: () => pedirCodigo("1984", cap3_desbloqueio) }
-      ]);
-    } else if (etapa === "cap3_audio") {
-      mostrarOpcoes([
-        { texto: "Tomás, não vás sozinho! Chama a polícia imediatamente!", proximo: () => cap5_final("policia") },
-        { texto: "Zero, consegues rastrear a localização do inspetor agora?", proximo: () => cap5_final("rastreio") }
-      ]);
-    } else if (etapa === "fim_sucesso") {
-      options.innerHTML = `<div style="text-align:center; padding:12px; color:#8696a0; font-size:13px;">Jogo Concluído! Clica em "↺ Reiniciar" no topo para jogar novamente.</div>`;
+  function cap1_grupo_resposta(opcao) {
+    if (opcao === "defender_tomas") {
+      pushMsg('grupo', 'received', 'Obrigado por estares do meu lado, ' + playerName + '... ❤️', 'Tomás');
+      pushMsg('grupo', 'received', 'Claro, tu defendes sempre o Tomás! Mas esquecem-se que a Sofia me ligou a chorar!', 'Inês');
+    } else {
+      pushMsg('grupo', 'received', 'Ela mandou-me mensagem às 22:30 a dizer que ia ao casarão velho.', 'Diogo');
+      pushMsg('grupo', 'received', 'O quê?! E só nos dizes isso agora, Diogo?!', 'Inês');
     }
+
+    setTimeout(() => {
+      pushMsg('zero', 'status', 'online');
+      pushMsg('zero', 'system', '⚠️ MENSAGEM INTERCEPTADA');
+      pushMsg('zero', 'received', 'Que grupo tão dramático... Querem saber onde está a Sofia de verdade, ' + playerName + '?');
+      alert("⚡ Notificação: O Hacker 'Zero' acabou de entrar no teu chat!");
+    }, 2000);
+  }
+
+  function carregarChatSofia() {
+    pushMsg('sofia', 'system', '📜 MENSAGENS GUARDADAS - ONTEM 23:10');
+    pushMsg('sofia', 'received', 'Se eu desaparecer... procura no diário do casarão.');
+    pushMsg('sofia', 'received', 'Não deixes que o grupo se destrua. Tu és a única pessoa em quem confio plenamente ❤️');
   }
 </script>
 
