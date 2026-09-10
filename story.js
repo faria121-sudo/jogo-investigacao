@@ -1,4 +1,4 @@
-/* ==================== HISTÓRIA E CAPÍTULOS ==================== */
+/* ==================== HISTÓRIA E CAPÍTULOS EXPANDIDOS ==================== */
 
 function iniciarCapitulo1() {
   atualizarListaGeral();
@@ -163,6 +163,7 @@ function verificarProgressoCap1() {
         pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
           pushMsg('carolina', 'received', 'Achas que ela foi para este local? O que é que eu faço com isto?', () => {
             
+            // Desbloquear o chat do Número Desconhecido e preparar nova reviravolta
             chatData.estranho.unlocked = true;
             chatData.estranho.status = "online";
             guardarEstado();
@@ -172,13 +173,17 @@ function verificarProgressoCap1() {
               {
                 texto: "Não sigas esse mapa sozinha! Pode ser uma armadilha.",
                 proximo: () => {
-                  pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta...');
+                  pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta...', null, () => {
+                    dispararAvisoEstranho();
+                  });
                 }
               },
               {
                 texto: "Guarda bem essa foto do mapa e tenta perceber o ponto exato.",
                 proximo: () => {
-                  pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer, mas vou tentar investigar.');
+                  pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer, mas vou tentar investigar.', null, () => {
+                    dispararAvisoEstranho();
+                  });
                 }
               }
             ]);
@@ -191,11 +196,35 @@ function verificarProgressoCap1() {
   }, 2000);
 }
 
+function dispararAvisoEstranho() {
+  setTimeout(() => {
+    pushMsg('estranho', 'received', 'Deixa o mapa em paz, ' + playerName + '. Tu não sabes onde te estás a meter.', null, () => {
+      pushMsg('estranho', 'received', 'Quem procura o que não deve, encontra o que não quer esta noite.');
+    });
+  }, 3000);
+}
+
 // Hook chamado pelo se.js quando o jogador abre um chat específico
 function aoAbrirChatHook(id) {
   if (id === 'ines' && chatData.ines.msgs.length <= 2) {
     conversaInes();
   } else if (id === 'tomas' && chatData.tomas.msgs.length <= 2) {
     conversaTomas();
+  } else if (id === 'estranho' && chatData.estranho.msgs.length === 2) {
+    // Interação inicial com o Número Desconhecido
+    mostrarOpcoes('estranho', [
+      {
+        texto: "Quem és tu? Como sabes o meu nome e o que se está a passar?",
+        proximo: () => {
+          pushMsg('estranho', 'received', 'Eu sei mais do que imaginas sobre a Marta. E sobre ti também.');
+        }
+      },
+      {
+        texto: "Se voltas a ameaçar-me, vou direto à polícia.",
+        proximo: () => {
+          pushMsg('estranho', 'received', 'A polícia não vai chegar a tempo de salvar a Carolina. Tenta a tua sorte.');
+        }
+      }
+    ]);
   }
 }
