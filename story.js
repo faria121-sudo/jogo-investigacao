@@ -72,6 +72,7 @@ function consultar_amigos() {
   });
 }
 
+// Lógica de conversas dos amigos com controlo estrito de estado
 function conversaInes() {
   mostrarOpcoes('ines', [
     {
@@ -99,8 +100,9 @@ function conversaInes() {
 }
 
 function ines_chateada() {
-  pushMsg('ines', 'received', 'Sério ' + playerName + '? A rapariga está desaparecida e tu estás com medo do teu próprioh rasto?! Que enorme desilusão...', null, () => {
+  pushMsg('ines', 'received', 'Sério ' + playerName + '? A rapariga está desaparecida e tu estás com medo do teu próprio rasto?! Que enorme desilusão...', null, () => {
     chatData.ines.status = "visto por último há 1 min (Chateada)";
+    chatData.ines.conversaIniciada = true;
     guardarEstado();
     verificarProgressoCap1();
   });
@@ -109,6 +111,7 @@ function ines_chateada() {
 function ines_apoia() {
   pushMsg('ines', 'received', 'Isso mesmo! Sabia que podia contar contigo! Mantém-me a par de TUDO o que descobrires.', null, () => {
     chatData.ines.status = "online (Amizade +1)";
+    chatData.ines.conversaIniciada = true;
     guardarEstado();
     verificarProgressoCap1();
   });
@@ -141,6 +144,7 @@ function conversaTomas() {
 function tomas_chateado() {
   pushMsg('tomas', 'received', 'Depois não digas que não te avisei. Se te meteres em sarilhos com a justiça ou com malta perigosa, não me venhas pedir ajuda.', null, () => {
     chatData.tomas.status = "visto por último há instantes (Irritado)";
+    chatData.tomas.conversaIniciada = true;
     guardarEstado();
     verificarProgressoCap1();
   });
@@ -149,78 +153,89 @@ function tomas_chateado() {
 function tomas_concorda() {
   pushMsg('tomas', 'received', 'Ainda bem que usas a cabeça. Ganha juízo, apaga essa conversa e deixa a polícia tratar disso.', null, () => {
     chatData.tomas.status = "online (Amizade +1)";
+    chatData.tomas.conversaIniciada = true;
     guardarEstado();
     verificarProgressoCap1();
   });
 }
 
 function verificarProgressoCap1() {
+  // Dispara apenas se ambos os amigos já tiverem sido abordados ou se o progresso o justificar
   setTimeout(() => {
-    pushMsg('carolina', 'received', playerName + '... Encontrei mais coisas! Estava a mexer no portátil dela e achei um diário e um mapa dobrado.', null, () => {
-      pushMsg('carolina', 'received', 'Tem uma zona assinalada com uma cruz vermelha perto da antiga linha de comboio abandonada da cidade.', null, () => {
-        
-        pushMsg('carolina', 'received', 'Achas que ela foi para este local? O que é que eu faço com isto?', 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
-          
-          chatData.estranho.unlocked = true;
-          chatData.estranho.status = "online";
-          guardarEstado();
+    if (!chatData.carolina.mapaEnviado) {
+      chatData.carolina.mapaEnviado = true;
+      guardarEstado();
 
-          mostrarOpcoes('carolina', [
-            {
-              texto: "Não sigas esse mapa sozinha! Isso cheira a armadilha a léguas.",
-              proximo: () => {
-                pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta... Eu tenho de ir lá ver.', null, () => {
-                  dispararAvisoEstranho();
-                });
+      pushMsg('carolina', 'received', playerName + '... Encontrei mais coisas! Estava a mexer no portátil dela e achei um diário e um mapa dobrado.', null, () => {
+        pushMsg('carolina', 'received', 'Tem uma zona assinalada com uma cruz vermelha perto da antiga linha de comboio abandonada da cidade.', null, () => {
+          
+          pushMsg('carolina', 'received', 'Achas que ela foi para este local? O que é que eu faço com isto?', 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
+            
+            chatData.estranho.unlocked = true;
+            chatData.estranho.status = "online";
+            guardarEstado();
+
+            mostrarOpcoes('carolina', [
+              {
+                texto: "Não sigas esse mapa sozinha! Isso cheira a armadilha a léguas.",
+                proximo: () => {
+                  pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta... Eu tenho de ir lá ver.', null, () => {
+                    dispararAvisoEstranho();
+                  });
+                }
+              },
+              {
+                texto: "Guarda bem essa foto do mapa e tenta perceber se há algum nome escrito nas margens.",
+                proximo: () => {
+                  pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer por dentro, mas vou olhar melhor para os apontamentos dela.', null, () => {
+                    dispararAvisoEstranho();
+                  });
+                }
               }
-            },
-            {
-              texto: "Guarda bem essa foto do mapa e tenta perceber se há algum nome escrito nas margens.",
-              proximo: () => {
-                pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer por dentro, mas vou olhar melhor para os apontamentos dela.', null, () => {
-                  dispararAvisoEstranho();
-                });
-              }
-            }
-          ]);
+            ]);
+
+          });
 
         });
-
       });
-    });
+    }
   }, 2500);
 }
 
 function dispararAvisoEstranho() {
   setTimeout(() => {
     pushMsg('estranho', 'received', 'Deixa o mapa em paz, ' + playerName + '. Tu não sabes onde te estás a meter.', null, () => {
-      pushMsg('estranho', 'received', 'Quem procura o que não deve esta noite, acaba como a Marta. Calado(a) estás tu melhor.', null, () => {
-        
-        mostrarOpcoes('estranho', [
-          {
-            texto: "Quem és tu? Como sabes o meu nome e o que se está a passar com a Marta?",
-            proximo: () => {
-              pushMsg('estranho', 'received', 'Eu sei exatamente o que a Marta descobriu no laboratório. E sei que o teu nome estava na caderneta dela por uma razão perigosa.');
-            }
-          },
-          {
-            texto: "Se voltas a ameaçar-me ou à Carolina, vou diretamente à polícia dar este número.",
-            proximo: () => {
-              pushMsg('estranho', 'received', 'A polícia não vai chegar a tempo de salvar a tua amiguinha do temporal lá fora. Tenta a tua sorte se tiveres coragem.');
-            }
-          }
-        ]);
-
-      });
+      pushMsg('estranho', 'received', 'Quem procura o que não deve esta noite, acaba como a Marta. Calado(a) estás tu melhor.');
     });
   }, 3000);
 }
 
-// Hook chamado pelo se.js quando o jogador abre um chat específico
+// Hook de abertura de chat universal e blindado contra loops ou bloqueios
 function aoAbrirChatHook(id) {
-  if (id === 'ines' && chatData.ines.msgs.length <= 2) {
+  if (id === 'ines' && !chatData.ines.conversaIniciada && chatData.ines.msgs.length <= 3) {
+    chatData.ines.conversaIniciada = true;
+    guardarEstado();
     conversaInes();
-  } else if (id === 'tomas' && chatData.tomas.msgs.length <= 2) {
+  } else if (id === 'tomas' && !chatData.tomas.conversaIniciada && chatData.tomas.msgs.length <= 3) {
+    chatData.tomas.conversaIniciada = true;
+    guardarEstado();
     conversaTomas();
+  } else if (id === 'estranho' && !chatData.estranho.conversaIniciada && chatData.estranho.msgs.length >= 2) {
+    chatData.estranho.conversaIniciada = true;
+    guardarEstado();
+    mostrarOpcoes('estranho', [
+      {
+        texto: "Quem és tu? Como sabes o meu nome e o que se está a passar com a Marta?",
+        proximo: () => {
+          pushMsg('estranho', 'received', 'Eu sei exatamente o que a Marta descobriu no laboratório. E sei que o teu nome estava na caderneta dela por uma razão perigosa.');
+        }
+      },
+      {
+        texto: "Se voltas a ameaçar-me ou à Carolina, vou diretamente à polícia dar este número.",
+        proximo: () => {
+          pushMsg('estranho', 'received', 'A polícia não vai chegar a tempo de salvar a tua amiguinha do temporal lá fora. Tenta a tua sorte se tiveres coragem.');
+        }
+      }
+    ]);
   }
 }
