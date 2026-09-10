@@ -159,36 +159,32 @@ function verificarProgressoCap1() {
     pushMsg('carolina', 'received', playerName + '... Encontrei um diário antigo e um mapa dobrado na secretária da Marta!', null, () => {
       pushMsg('carolina', 'received', 'Tem uma zona assinalada com uma cruz vermelha perto da antiga linha de comboio abandonada.', null, () => {
         
-        // A Carolina envia a foto do mapa
-        pushMsg('carolina', 'received', null, 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
-          pushMsg('carolina', 'received', 'Achas que ela foi para este local? O que é que eu faço com isto?', () => {
-            
-            // Desbloquear o chat do Número Desconhecido e preparar nova reviravolta
-            chatData.estranho.unlocked = true;
-            chatData.estranho.status = "online";
-            guardarEstado();
+        // A Carolina envia a foto do mapa com texto limpo
+        pushMsg('carolina', 'received', 'Achas que ela foi para este local? O que é que eu faço com isto?', 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=500&auto=format&fit=crop&q=80', () => {
+          
+          chatData.estranho.unlocked = true;
+          chatData.estranho.status = "online";
+          guardarEstado();
 
-            abrirChat('carolina');
-            mostrarOpcoes('carolina', [
-              {
-                texto: "Não sigas esse mapa sozinha! Pode ser uma armadilha.",
-                proximo: () => {
-                  pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta...', null, () => {
-                    dispararAvisoEstranho();
-                  });
-                }
-              },
-              {
-                texto: "Guarda bem essa foto do mapa e tenta perceber o ponto exato.",
-                proximo: () => {
-                  pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer, mas vou tentar investigar.', null, () => {
-                    dispararAvisoEstranho();
-                  });
-                }
+          mostrarOpcoes('carolina', [
+            {
+              texto: "Não sigas esse mapa sozinha! Pode ser uma armadilha.",
+              proximo: () => {
+                pushMsg('carolina', 'received', 'Mas é a única pista que temos da Marta...', null, () => {
+                  dispararAvisoEstranho();
+                });
               }
-            ]);
+            },
+            {
+              texto: "Guarda bem essa foto do mapa e tenta perceber o ponto exato.",
+              proximo: () => {
+                pushMsg('carolina', 'received', 'Já tirei print. Estou a tremer, mas vou tentar investigar.', null, () => {
+                  dispararAvisoEstranho();
+                });
+              }
+            }
+          ]);
 
-          });
         });
 
       });
@@ -211,7 +207,6 @@ function aoAbrirChatHook(id) {
   } else if (id === 'tomas' && chatData.tomas.msgs.length <= 2) {
     conversaTomas();
   } else if (id === 'estranho' && chatData.estranho.msgs.length === 2) {
-    // Interação inicial com o Número Desconhecido
     mostrarOpcoes('estranho', [
       {
         texto: "Quem és tu? Como sabes o meu nome e o que se está a passar?",
